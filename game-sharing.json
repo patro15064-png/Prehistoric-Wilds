@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 2,
+  "title": "Prehistoric Wilds",
+  "description": "Hunt prehistoric beasts across a lush volcanic island, dodge telegraphed attacks, harvest resources, craft primitive gear, build your camp, and relight the ancient signal tower.",
+  "defaultCaptions": {
+    "x": "Read the tells, roll through the stomp, punish the recovery. Prehistoric Wilds is a stylized browser 3D hunting and crafting expedition.",
+    "facebook": "Prehistoric Wilds: explore a volcanic island, hunt original creatures and apex beasts, craft stronger gear, and relight your camp's signal tower. Plays directly in your browser.",
+    "reddit": "I created Prehistoric Wilds, a browser 3D hunting and crafting action expedition with telegraphed combat, weapon classes, tracking, and camp progression.",
+    "discord": "Prehistoric Wilds: a stylized 3D browser hunt. Dodge, punish, carve, craft, and light the signal tower."
+  },
+  "assets": {
+    "favicon": "assets/share/favicon.png"
+  }
+}

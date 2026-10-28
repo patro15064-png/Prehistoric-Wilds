@@ -1,0 +1,23 @@
+# Dependencies
+node_modules/
+
+# Production build outputs
+dist/
+
+# Test screenshots and profiling
+shots/
+scratch/
+*.log
+
+# Internal runtime state & private identifiers
+.manus-webdev/
+.manus-starter-init.json
+
+# Environment variables & secrets
+.env
+.env.*
+!.env.example
+
+# OS metadata
+.DS_Store
+Thumbs.db

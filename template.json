@@ -1,0 +1,11 @@
+{
+  "id": "prehistoric-wilds",
+  "kind": "game",
+  "engine": "threejs",
+  "status": "release",
+  "name": "Prehistoric Wilds",
+  "description": "A 3D hunting, gathering, and crafting expedition game built with Three.js, procedural animations, dynamic audio, telegraphed combat, and custom heightfield terrain.",
+  "capabilities": [
+    "static"
+  ]
+}
