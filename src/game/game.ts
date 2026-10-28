@@ -15,6 +15,8 @@ import { GADGET_TUNING as GT, GEAR, HELD_NAMES, HELD_ORDER, ITEMS, MEALS, NODES,
 import { Gadgets } from './gadgets'
 import { Tracks, type StudyTarget } from './tracks'
 import { Harvest } from './harvest'
+// ANIMAL SYSTEM HOOK
+import { AnimalManager } from './animals'
 import {
   PROGRESS_KEY, add, addClue, canHold, carveLoot, clearTrack, cook, craft, equip, gearStats, hold, isTracked, newProgress, nextGadget, nextHeld, noteHunt, notePart,
   noteSeen, noteWeak, objective, parseProgress, restoreTower, tickMeal, upgradeCamp, useGadget,
@@ -90,6 +92,8 @@ export class Game {
   /** Most recent creature you fought (for the HUD target panel). */
   focusTarget: Creature | null = null
   boss: Creature | null = null
+  // ANIMAL SYSTEM HOOK
+  animals!: AnimalManager
   interact: Interact | null = null
   region: RegionId = 'coast'
   /** Combat level this frame (0 none, 1 hunt, 2 boss) and smoothed frame time — drive background loading. */
@@ -144,6 +148,13 @@ export class Game {
     this.gadgets = new Gadgets(this.scene, this.terrain, this.fx, this.audio)
     this.tracks = new Tracks(this.scene, this.terrain)
     this.spawnCreatures()
+    // ANIMAL SYSTEM HOOK
+    this.animals = new AnimalManager(this.terrain, this.colliders, this.audio, this.fx, {
+      popup: (t, at, k) => this.hooks.popup(t, at, k),
+      loot: (id, n) => this.hooks.loot(id, n),
+      toast: (m, t) => this.hooks.toast(m, t),
+    })
+    this.scene.add(this.animals.group)
     progress(0.95)
     this.player.root.traverse(o => {
       if ((o as THREE.Mesh).isMesh) o.castShadow = true
@@ -184,6 +195,8 @@ export class Game {
         return r ? Math.atan2(r.x - P.pos.x, r.z - P.pos.z) : null
       },
       harvestStrike: (heavy, charge) => this.harvestStrike(heavy, charge),
+      // ANIMAL SYSTEM HOOK
+      animalStrike: (atk, motion, heavy, reach, arc) => this.animals.strike(atk, motion, heavy, this.player.pos, this.player.yaw, reach, arc),
       shoot: (from, yaw, motion, charged) => this.slingShot(from, yaw, motion, charged),
       onCounter: () => {
         this.hooks.stamp('COUNTER!', 'counter')
@@ -232,6 +245,9 @@ export class Game {
     this.gadgets.clear()
     this.tracks.clear()
     this.huntStart.clear()
+    // ANIMAL SYSTEM HOOK
+    this.animals.reset()
+    this.animals.spawnInitialBatch(this.player.pos)
     this.trackSp = (Object.keys(SPECIES) as SpeciesId[]).find(sp => isTracked(this.progress, sp)) ?? null
     this.pendingHeld = null
     this.player.revive()
@@ -577,6 +593,8 @@ export class Game {
     const dir = tgt ? tgt.center(new THREE.Vector3()).sub(from).normalize() : new THREE.Vector3(Math.sin(yaw), 0.05, Math.cos(yaw)).normalize()
     if (tgt) dir.y += 0.02
     this.gadgets.shoot(from, dir, this.player.stats.attack, motion, charged, { x: this.player.pos.x, z: this.player.pos.z })
+    // ANIMAL SYSTEM HOOK
+    this.animals.checkProjectileHit(from, from.clone().add(dir.clone().multiplyScalar(SLING_RANGE * (charged ? 1.5 : 1))), this.player.stats.attack * motion * (charged ? 1.5 : 1.0))
     if (charged) this.fx.ring(from.x, from.y, from.z, 0.2, 1.2, '#fff0c8', 0.25)
     return true
   }
@@ -812,6 +830,8 @@ export class Game {
     this.resT += dt
     this.camp.update(dt, this.time)
     this.updateRegion()
+    // ANIMAL SYSTEM HOOK
+    this.animals.update(simDt, P.pos, this.progress)
     if (this.mode === 'playing') this.updateInteract()
 
     // Faint & recovery
@@ -852,6 +872,9 @@ export class Game {
     this.telegraphs.clear()
     this.boss = null
     P.revive()
+    // ANIMAL SYSTEM HOOK
+    this.animals.reset()
+    this.animals.spawnInitialBatch(P.pos)
     this.progress.hunger = Math.max(this.progress.hunger, 55)
     P.place(CAMP.spawn.x, CAMP.spawn.z, this.terrain, Math.PI)
     this.cam.snap(P.pos, Math.PI)
@@ -1058,6 +1081,13 @@ export class Game {
     this.interact = null
     this.interactFn = null
     if (!P.alive) return
+    // ANIMAL SYSTEM HOOK
+    const nearestMeat = this.animals.nearestPickup(P.pos)
+    if (nearestMeat) {
+      this.interact = { label: 'Raw Meat', verb: `Pick up (${nearestMeat.amount})`, enabled: true }
+      this.interactFn = () => this.animals.collectPickup(nearestMeat, this.progress, P.pos)
+      return
+    }
     // Carve
     let bestC: Creature | null = null
     let bd = Infinity

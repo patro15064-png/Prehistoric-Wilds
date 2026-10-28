@@ -247,6 +247,8 @@ export type PlayerCtx = {
   harvestAim?(yaw: number): number | null
   /** Active-frame hit test against trees/boulders. Returns true if something was struck. */
   harvestStrike?(heavy: boolean, charge: number): boolean
+  // ANIMAL SYSTEM HOOK
+  animalStrike?(attack: number, motion: number, heavy: boolean, reach: number, arcMult: number): boolean
   /** Sling: fire a stone. Returns false when out of ammo. */
   shoot?(from: THREE.Vector3, yaw: number, motion: number, charged: boolean): boolean
   /** Spear counter-thrust landed its opening (UI callout). */
@@ -943,6 +945,10 @@ export class Player implements PlayerLike {
       const res = c.takeHit(this.stats.attack, motion, heavy, { x: this.pos.x, z: this.pos.z }, ctx.cctx, opts)
       const point = new THREE.Vector3(this.pos.x + dx * ((d - c.def.radius * 0.7) / Math.max(d, 0.01)), this.pos.y + Math.min(1.3, c.def.height * 0.5), this.pos.z + dz * ((d - c.def.radius * 0.7) / Math.max(d, 0.01)))
       ctx.onHit(c, res, point, heavy)
+    }
+    // ANIMAL SYSTEM HOOK
+    if (ctx.animalStrike?.(this.stats.attack, motion, heavy, reach, this.held === 'weapon' ? this.cls.arc : 1)) {
+      this.harvestDone = true
     }
     // Nothing alive in the arc: the swing can bite into a tree or boulder instead.
     if (!this.harvestDone && this.hitSet.size === 0 && ctx.harvestStrike?.(heavy, heavy ? this.chargeLevel : 0)) this.harvestDone = true
