@@ -1,10 +1,12 @@
 # Prehistoric Wilds
 
+<!-- AUTOSYNC:BADGES:START -->
 [![Three.js](https://img.shields.io/badge/Three.js-0.186.1-black?logo=three.js)](https://threejs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9.3-blue?logo=typescript)](https://www.typescriptlang.org/)
 [![Vite](https://img.shields.io/badge/Vite-8.3.1-646CFF?logo=vite)](https://vitejs.dev/)
 [![Cloudflare Pages](https://img.shields.io/badge/Cloudflare_Pages-Ready-F38020?logo=cloudflare)](https://pages.cloudflare.com/)
 [![Vitest](https://img.shields.io/badge/Vitest-5.0.2-729B1B?logo=vitest)](https://vitest.dev/)
+<!-- AUTOSYNC:BADGES:END -->
 
 **Prehistoric Wilds** is a stylized 3D browser-based action-hunting and crafting expedition built with Three.js, TypeScript, and Vite. Explore the untamed biomes of Cinderfall Isle, hunt ferocious apex beasts with telegraphed combat, chop trees, mine boulders, track wildlife clues, cook hearty meals, upgrade your base camp across three stages, and relight the ancient signal tower.
 
@@ -14,7 +16,7 @@
 
 ### ⚔️ Telegraphed Action Combat
 - **Combos & Heavy Strikes**: Fluid 3-hit light attack combo and a 3-level charged heavy attack that staggers enemies and breaks poise.
-- **Dodge Roll with i-Frames**: Evade telegraphed damage zones. Perfect dodge rolls refund stamina and grant tactical counter-windows.
+- **Dodge Roll with i-Frames**: Evade telegraphed damage zones with fluid invulnerability frames and tactical counter-windows.
 - **Lock-On Targeting**: Smooth orbit camera with terrain collision clearance and dynamic target locking (<kbd>Q</kbd> / Middle Mouse).
 - **Poultices**: Gather herbs and craft Mendleaf Poultices (<kbd>R</kbd>) to recover health during encounters.
 
@@ -33,6 +35,7 @@
 - Natural resource respawning when traveling away from depleted areas.
 
 ### 🍖 Survival, Cooking & Traps
+- **Action-Driven Hunger**: Hunger drains dynamically through activity (sprinting burns 1.0/s, walking burns 0.35/s) with near-zero idle drain (0.005/s - >33 min per 10%). Satiate hunger by cooking hearth meals or hunting game. Unconstrained actions: dodge rolls and sprints are free of artificial hunger bar locks.
 - **Campfire Cooking**: Roast meals at the camp hearth featuring an interactive **Sear QTE Gauge**. Hit the gold band with <kbd>Space</kbd> or <kbd>E</kbd> for extended 50% buff durations.
 - **Survival Gadgets** (<kbd>G</kbd> to deploy, <kbd>C</kbd> to cycle):
   - **Snare**: Trips charging predators in their tracks.
@@ -52,31 +55,34 @@
 
 ## Controls
 
+<!-- AUTOSYNC:CONTROLS:START -->
 | Action | Keyboard & Mouse | Gamepad |
 | :--- | :--- | :--- |
 | **Move** | <kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> | Left Stick |
 | **Look / Aim** | Mouse (pointer lock) | Right Stick |
-| **Light Attack (3-hit combo)** | Left Click / <kbd>J</kbd> | <kbd>X</kbd> (Square) |
-| **Charged Heavy Attack** | Hold Right Click / <kbd>K</kbd> | Hold <kbd>Y</kbd> (Triangle) |
-| **Dodge Roll (i-frames)** | <kbd>Space</kbd> | <kbd>A</kbd> (Cross) |
+| **Light Attack** (3-hit combo) | Left Click / <kbd>J</kbd> | <kbd>X</kbd> (Square) |
+| **Charged Heavy Attack** (3 levels) | Hold Right Click / <kbd>K</kbd> | Hold <kbd>Y</kbd> (Triangle) |
+| **Dodge Roll** (i-frames) | <kbd>Space</kbd> | <kbd>A</kbd> (Cross) |
 | **Sprint** | Hold <kbd>Shift</kbd> | <kbd>L3</kbd> / <kbd>LB</kbd> |
 | **Interact / Gather / Carve** | <kbd>E</kbd> | <kbd>B</kbd> (Circle) |
 | **Tool / Weapon Hotbar** | <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> <kbd>4</kbd> / <kbd>F</kbd> | D-Pad Left / Right |
-| **Use Gadget (Trap / Flash)** | <kbd>G</kbd> | D-Pad Down |
-| **Cycle Gadget** | <kbd>C</kbd> | D-Pad Up |
-| **Apply Poultice (Heal)** | <kbd>R</kbd> | <kbd>RB</kbd> |
-| **Lock-On Target** | <kbd>Q</kbd> / Middle Click | <kbd>R3</kbd> |
+| **Direct Environmental Harvest** | Attack tree / boulder | Attack |
+| **Deploy Gadget** (Snare / Trap / Flash) | <kbd>G</kbd> | D-Pad Down |
+| **Cycle Active Gadget** | <kbd>C</kbd> | D-Pad Up |
+| **Study Wildlife Clues** (3 = tracked) | <kbd>E</kbd> on tracks | <kbd>B</kbd> (Circle) |
+| **Lock-On Target** | <kbd>Q</kbd> / Middle Click | <kbd>R3</kbd> / <kbd>RB</kbd> |
+| **Apply Poultice** (Heal) | <kbd>R</kbd> | <kbd>LB</kbd> |
 | **Satchel & Crafting** | <kbd>Tab</kbd> | Select / Back |
-| **Field Map** | <kbd>M</kbd> | Touchpad / View |
-| **Hunter's Journal** | <kbd>B</kbd> | — |
-| **Skills Progression** | <kbd>V</kbd> | — |
-| **Controls Help** | <kbd>H</kbd> | — |
+| **Island Map** | <kbd>M</kbd> | Touchpad / View |
+| **Controls Help Card** | <kbd>H</kbd> | — |
 | **Pause / Resume** | <kbd>Esc</kbd> | Start / Menu |
+<!-- AUTOSYNC:CONTROLS:END -->
 
 ---
 
 ## Project Structure
 
+<!-- AUTOSYNC:STRUCTURE:START -->
 ```
 ├── public/                 # Static assets copied directly to dist
 │   ├── _headers            # Cloudflare Pages security & caching headers
@@ -95,12 +101,13 @@
 │   ├── styles/             # Modular CSS design system and tribal styling
 │   └── main.ts             # Application bootstrap and lifecycle orchestration
 ├── tests/                  # Unit and integration test suites (vitest)
-├── scripts/                # Asset optimization, size budget checks, and Playwright smoke tests
+├── scripts/                # Asset optimization, size budget checks, Playwright smoke tests & doc sync
 ├── enemies/                # Multi-page HTML entry point for the Enemy Lab
 ├── wrangler.toml           # Cloudflare Pages configuration
 ├── .nvmrc                  # Node.js version pin (Node 20 LTS)
 └── vite.config.ts          # Vite bundler configuration with multi-page rollup inputs
 ```
+<!-- AUTOSYNC:STRUCTURE:END -->
 
 ---
 
@@ -124,6 +131,8 @@ npm run dev
 ```
 
 ### Testing & Validation
+
+<!-- AUTOSYNC:SCRIPTS:START -->
 ```bash
 # Run unit & integration test suites
 npm test
@@ -131,12 +140,16 @@ npm test
 # Run TypeScript typechecker
 npm run typecheck
 
-# Build production bundle with asset size verification
+# Build production bundle with automated doc sync & size check
 npm run build
 
 # Run end-to-end headless browser smoke test
 npm run smoke
+
+# Auto-sync README documentation with codebase
+npm run sync:docs
 ```
+<!-- AUTOSYNC:SCRIPTS:END -->
 
 ---
 

@@ -9,7 +9,7 @@ Comprehensive verification checklist for the standalone release and Cloudflare P
 - [x] **Telegraphed Action Combat**
   - [x] 3-hit light attack combo with fluid animations and hitstop feel
   - [x] 3-level charged heavy attack with visual charge indicator and poise break
-  - [x] Responsive dodge roll with invulnerability frames (i-frames) and stamina refund on perfect rolls
+  - [x] Responsive dodge roll with invulnerability frames (i-frames) and tactical counter-windows on perfect rolls
   - [x] Camera target lock-on (Q / Middle click) and dynamic orbit camera with terrain collision avoidance
   - [x] Mendleaf Poultices (R key) with healing particle animations and sound effects
 

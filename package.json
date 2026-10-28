@@ -6,8 +6,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc --noEmit && vite build && node scripts/check-size.mjs",
-    "build:pages": "tsc --noEmit && vite build",
+    "sync:docs": "node scripts/sync-readme.mjs",
+    "sync:check": "node scripts/sync-readme.mjs --check",
+    "build": "node scripts/sync-readme.mjs && tsc --noEmit && vite build && node scripts/check-size.mjs",
+    "build:pages": "node scripts/sync-readme.mjs && tsc --noEmit && vite build",
     "build:share": "node scripts/manus-game-assets/restore.mjs && node scripts/manus-game-sharing/build.mjs",
     "preview": "vite preview --port 4173 --strictPort",
     "typecheck": "tsc --noEmit",
