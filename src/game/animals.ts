@@ -47,6 +47,11 @@ export const ANIMAL_CONFIG = {
     rabbit: {
       id: 'rabbit' as const,
       name: 'Wild Hare',
+      title: 'Swift Island Herbivore', /* CODEX TEXT */
+      temperament: 'passive' as const, /* CODEX TEXT */
+      diet: 'Wild grasses, clover, and tender jungle roots.', /* CODEX TEXT */
+      purpose: 'Abundant small game providing immediate hunger replenishment.', /* CODEX TEXT */
+      attacks: 'Does not attack. Flees at 7.2 m/s when approached within 18m; panics if struck.', /* CODEX TEXT */
       hp: 1,
       speed: 2.4,
       fleeSpeed: 7.2,
@@ -59,6 +64,11 @@ export const ANIMAL_CONFIG = {
     deer: {
       id: 'deer' as const,
       name: 'Island Fallow Deer',
+      title: 'Graceful Highland Grazier', /* CODEX TEXT */
+      temperament: 'passive' as const, /* CODEX TEXT */
+      diet: 'Brushwood foliage, tender bark, and highland scrub.', /* CODEX TEXT */
+      purpose: 'Prime hunting target yielding large haunches (3 raw meat drops).', /* CODEX TEXT */
+      attacks: 'Does not attack. Bounds away through brush when alerted within 18m.', /* CODEX TEXT */
       hp: 3,
       speed: 2.1,
       fleeSpeed: 6.6,
@@ -71,6 +81,11 @@ export const ANIMAL_CONFIG = {
     bird: {
       id: 'bird' as const,
       name: 'Emerald Pheasant',
+      title: 'Plumed Wild Forager', /* CODEX TEXT */
+      temperament: 'passive' as const, /* CODEX TEXT */
+      diet: 'Wild berries, seeds, insects, and glowcap spores.', /* CODEX TEXT */
+      purpose: 'Widespread wild fowl providing handy sustenance across all island biomes.', /* CODEX TEXT */
+      attacks: 'Does not attack. Startles and flutters rapidly away when approached.', /* CODEX TEXT */
       hp: 1,
       speed: 1.8,
       fleeSpeed: 5.6,

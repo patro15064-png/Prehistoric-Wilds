@@ -17,38 +17,38 @@ export type ItemId =
   | 'meat' | 'glowcap' | 'snare' | 'pitfall' | 'flashPod'
 
 export type ItemKind = 'material' | 'part' | 'key' | 'consumable' | 'gadget'
-export type ItemDef = { id: ItemId; name: string; desc: string; kind: ItemKind; icon: IconId; color: string }
+export type ItemDef = { id: ItemId; name: string; desc: string; kind: ItemKind; icon: IconId; color: string; purpose?: string /* CODEX TEXT */ }
 
-const item = (id: ItemId, name: string, kind: ItemKind, icon: IconId, color: string, desc: string): ItemDef => ({ id, name, kind, icon, color, desc })
+const item = (id: ItemId, name: string, kind: ItemKind, icon: IconId, color: string, desc: string, purpose?: string): ItemDef => ({ id, name, kind, icon, color, desc, purpose })
 
 export const ITEMS: Record<ItemId, ItemDef> = {
-  wood: item('wood', 'Wood', 'material', 'log', '#b07a47', 'Sturdy branches and driftwood.'),
-  stone: item('stone', 'Stone', 'material', 'rock', '#a8a29a', 'Fist-sized rock for building.'),
-  fiber: item('fiber', 'Reed Fiber', 'material', 'reed', '#b9d36a', 'Tough reedgrass for lashing and wraps.'),
-  flint: item('flint', 'Flint', 'material', 'flint', '#6d7f96', 'Sharp-edged stone found inside rocks.'),
-  bone: item('bone', 'Bone', 'material', 'bone', '#f1e6cc', 'Weathered bones of old beasts.'),
-  herb: item('herb', 'Mendleaf', 'material', 'herb', '#e0607a', 'A rosy leaf that closes wounds.'),
-  amber: item('amber', 'Amberite', 'material', 'crystal', '#ffb23e', 'Glowing resin crystal of the highlands. Needs a pick.'),
-  obsidian: item('obsidian', 'Obsidian', 'material', 'shard', '#5b4b8a', 'Volcanic glass, razor sharp. Needs a pick.'),
-  sulfur: item('sulfur', 'Sulfur Crust', 'material', 'sulfur', '#f2e04a', 'Brimstone crystals that burn bright.'),
-  hogTusk: item('hogTusk', 'Hog Tusk', 'part', 'tusk', '#f4ead2', 'Curved tusk carved from a Tuskhog.'),
-  roughHide: item('roughHide', 'Bristle Hide', 'part', 'hide', '#9a6440', 'Bristly Tuskhog hide.'),
-  snapperScale: item('snapperScale', 'Snapper Scale', 'part', 'scale', '#5fae8d', 'Slick scale from a Mudsnapper.'),
-  stalkerClaw: item('stalkerClaw', 'Stalker Claw', 'part', 'claw', '#e8d7b0', 'Hooked claw of a Dunestalker.'),
-  stalkerHide: item('stalkerHide', 'Striped Hide', 'part', 'hide', '#d99a4a', 'Tough striped Dunestalker hide.'),
-  emberCarapace: item('emberCarapace', 'Ember Carapace', 'part', 'shell', '#c2461f', 'Heat-forged Emberbeetle shell.'),
-  ashfangPelt: item('ashfangPelt', 'Ashfang Pelt', 'part', 'pelt', '#6b5a58', 'Fire-resistant cinder fur.'),
-  ruinPlate: item('ruinPlate', 'Ruinhorn Plate', 'part', 'plate', '#8f8a7a', 'A slab of the Ruinhorn\u2019s stony hide.'),
-  hornShard: item('hornShard', 'Horn Shard', 'part', 'horn', '#d7c9a0', 'A splinter of the great horn.'),
-  ruinCrest: item('ruinCrest', 'Ruinhorn Crest', 'key', 'crest', '#e9c46a', 'The tyrant\u2019s crest. Needed to raise the signal tower.'),
-  scorchScale: item('scorchScale', 'Scorch Scale', 'part', 'scale', '#ff6a2a', 'Still-warm scale of Vulkarr.'),
-  magmaHeart: item('magmaHeart', 'Magma Heart', 'key', 'heart', '#ff4b12', 'Vulkarr\u2019s burning heart. It will light the beacon.'),
-  poultice: item('poultice', 'Mendleaf Poultice', 'consumable', 'potion', '#ff7d95', 'Restores health. Press R to apply.'),
-  meat: item('meat', 'Raw Haunch', 'material', 'meat', '#d0645a', 'Fresh meat carved from a beast. Cook it at the hearth.'),
-  glowcap: item('glowcap', 'Glowcap', 'material', 'mushroom', '#62d6ff', 'A luminous mushroom. Its spores burst into blinding light.'),
-  snare: item('snare', 'Vine Snare', 'gadget', 'snare', '#8fbf4a', 'Lay it with G. Holds a beast for 4 s; trips a charging one.'),
-  pitfall: item('pitfall', 'Pitfall', 'gadget', 'pit', '#9a7a4e', 'Dig it with G. A beast that steps in is stuck for 5 s.'),
-  flashPod: item('flashPod', 'Flash Pod', 'gadget', 'pod', '#fff3a0', 'Throw it with G. Blinds beasts facing it and interrupts windups.'),
+  wood: item('wood', 'Wood', 'material', 'log', '#b07a47', 'Sturdy branches and driftwood.', 'Primary material for weapons, tools, camp buildings, and traps.'),
+  stone: item('stone', 'Stone', 'material', 'rock', '#a8a29a', 'Fist-sized rock for building.', 'Building material for hearth upgrades and sling ammunition.'),
+  fiber: item('fiber', 'Reed Fiber', 'material', 'reed', '#b9d36a', 'Tough reedgrass for lashing and wraps.', 'Flexible plant cordage used in gear, traps, and healing poultices.'),
+  flint: item('flint', 'Flint', 'material', 'flint', '#6d7f96', 'Sharp-edged stone found inside rocks.', 'Sharp stone blade component for axes, picks, knives, and spears.'),
+  bone: item('bone', 'Bone', 'material', 'bone', '#f1e6cc', 'Weathered bones of old beasts.', 'Rigid organic material for carving knives, spears, and pitfall spikes.'),
+  herb: item('herb', 'Mendleaf', 'material', 'herb', '#e0607a', 'A rosy leaf that closes wounds.', 'Medicinal leaf crafted into poultices or cooked into stamina stew.'),
+  amber: item('amber', 'Amberite', 'material', 'crystal', '#ffb23e', 'Glowing resin crystal of the highlands. Needs a pick.', 'Highland resin used for tier II heavy weapons, armor, and camp stage III.'),
+  obsidian: item('obsidian', 'Obsidian', 'material', 'shard', '#5b4b8a', 'Volcanic glass, razor sharp. Needs a pick.', 'Sharp volcanic glass used to craft greatclubs and ignite the signal beacon.'),
+  sulfur: item('sulfur', 'Sulfur Crust', 'material', 'sulfur', '#f2e04a', 'Brimstone crystals that burn bright.', 'Volatile mineral used in brimstone skewers and signal tower fuel.'),
+  hogTusk: item('hogTusk', 'Hog Tusk', 'part', 'tusk', '#f4ead2', 'Curved tusk carved from a Tuskhog.', 'Sturdy beast tusk used to craft heavy mauls and war hammers.'),
+  roughHide: item('roughHide', 'Bristle Hide', 'part', 'hide', '#9a6440', 'Bristly Tuskhog hide.', 'Heavy hide tailored into protective garb, slings, and palisades.'),
+  snapperScale: item('snapperScale', 'Snapper Scale', 'part', 'scale', '#5fae8d', 'Slick scale from a Mudsnapper.', 'Aquatic scale used in armor plating, savory broth, and camp stage II.'),
+  stalkerClaw: item('stalkerClaw', 'Stalker Claw', 'part', 'claw', '#e8d7b0', 'Hooked claw of a Dunestalker.', 'Hooked raptor claw forged into lances, hammers, and stonehold defenses.'),
+  stalkerHide: item('stalkerHide', 'Striped Hide', 'part', 'hide', '#d99a4a', 'Tough striped Dunestalker hide.', 'Supple pelt crafted into bone plate armor and high-tension slings.'),
+  emberCarapace: item('emberCarapace', 'Ember Carapace', 'part', 'shell', '#c2461f', 'Heat-forged Emberbeetle shell.', 'Hardened volcanic carapace crafted into heavy obsidian greatclubs.'),
+  ashfangPelt: item('ashfangPelt', 'Ashfang Pelt', 'part', 'pelt', '#6b5a58', 'Fire-resistant cinder fur.', 'Fireproof fur woven into heat-resistant mantle armor.'),
+  ruinPlate: item('ruinPlate', 'Ruinhorn Plate', 'part', 'plate', '#8f8a7a', 'A slab of the Ruinhorn\u2019s stony hide.', 'Monolithic plate used for end-game armor and stonehold camp construction.'),
+  hornShard: item('hornShard', 'Horn Shard', 'part', 'horn', '#d7c9a0', 'A splinter of the great horn.', 'Sharp horn tip embedded into the obsidian greatclub.'),
+  ruinCrest: item('ruinCrest', 'Ruinhorn Crest', 'key', 'crest', '#e9c46a', 'The tyrant\u2019s crest. Needed to raise the signal tower.', 'Ancient tyrant trophy required to complete and raise the Signal Tower.'),
+  scorchScale: item('scorchScale', 'Scorch Scale', 'part', 'scale', '#ff6a2a', 'Still-warm scale of Vulkarr.', 'Blazing wyrm scale trophy proving victory in the volcano.'),
+  magmaHeart: item('magmaHeart', 'Magma Heart', 'key', 'heart', '#ff4b12', 'Vulkarr\u2019s burning heart. It will light the beacon.', 'Flaming wyrm heart required to ignite the beacon and signal rescue.'),
+  poultice: item('poultice', 'Mendleaf Poultice', 'consumable', 'potion', '#ff7d95', 'Restores health. Press R to apply.', 'Healing consumable: press R in combat to instantly restore 45 health.'),
+  meat: item('meat', 'Raw Haunch', 'material', 'meat', '#d0645a', 'Fresh meat carved from a beast. Cook it at the hearth.', 'Restores 15 hunger on pickup or serves as key ingredient in all hearth meals.'),
+  glowcap: item('glowcap', 'Glowcap', 'material', 'mushroom', '#62d6ff', 'A luminous mushroom. Its spores burst into blinding light.', 'Luminous fungal ingredient used to craft blinding flash pods.'),
+  snare: item('snare', 'Vine Snare', 'gadget', 'snare', '#8fbf4a', 'Lay it with G. Holds a beast for 4 s; trips a charging one.', 'Tactical trap (G): stops beasts for 4s; trips charging foes for +30% damage.'),
+  pitfall: item('pitfall', 'Pitfall', 'gadget', 'pit', '#9a7a4e', 'Dig it with G. A beast that steps in is stuck for 5 s.', 'Heavy trap (G): immobilizes beasts for 5s for sustained damage combos.'),
+  flashPod: item('flashPod', 'Flash Pod', 'gadget', 'pod', '#fff3a0', 'Throw it with G. Blinds beasts facing it and interrupts windups.', 'Throwable gadget (G): blinds monsters for 3.5s and cancels attack windups.'),
 }
 
 export const STACK_MAX = 99
@@ -77,12 +77,12 @@ export function itemCap(id: ItemId): number {
 
 export type MealId = 'heartyHaunch' | 'trailStew' | 'snapperBroth' | 'brimstoneSkewer'
 export type MealBuff = { hp?: number; stamina?: number; staRegen?: number; dodgeCost?: number; defense?: number; attack?: number; heatSlow?: number }
-export type MealDef = { id: MealId; name: string; stage: 1 | 2; cost: Partial<Record<ItemId, number>>; buff: MealBuff; desc: string }
+export type MealDef = { id: MealId; name: string; stage: 1 | 2; cost: Partial<Record<ItemId, number>>; buff: MealBuff; desc: string; purpose?: string /* CODEX TEXT */ }
 export const MEALS: Record<MealId, MealDef> = {
-  heartyHaunch: { id: 'heartyHaunch', name: 'Hearty Haunch', stage: 1, cost: { meat: 2 }, buff: { hp: 25 }, desc: '+25 max health' },
-  trailStew: { id: 'trailStew', name: 'Trail Stew', stage: 1, cost: { meat: 1, herb: 2 }, buff: { stamina: 30, staRegen: 0.2 }, desc: '+30 max stamina, +20% stamina regen' },
-  snapperBroth: { id: 'snapperBroth', name: 'Snapper Broth', stage: 1, cost: { meat: 1, snapperScale: 1, herb: 1 }, buff: { dodgeCost: 0.25, defense: 0.08 }, desc: 'Dodges cost 25% less stamina, +8% defence' },
-  brimstoneSkewer: { id: 'brimstoneSkewer', name: 'Brimstone Skewer', stage: 2, cost: { meat: 1, sulfur: 1 }, buff: { attack: 0.12, heatSlow: 0.6 }, desc: '+12% attack, caldera heat drains 60% slower' },
+  heartyHaunch: { id: 'heartyHaunch', name: 'Hearty Haunch', stage: 1, cost: { meat: 2 }, buff: { hp: 25 }, desc: '+25 max health', purpose: 'Restores hunger and provides a +25 maximum health buffer for 5 minutes.' },
+  trailStew: { id: 'trailStew', name: 'Trail Stew', stage: 1, cost: { meat: 1, herb: 2 }, buff: { stamina: 30, staRegen: 0.2 }, desc: '+30 max stamina, +20% stamina regen', purpose: 'Restores hunger and boosts stamina pool by +30 with +20% regen for 5 minutes.' },
+  snapperBroth: { id: 'snapperBroth', name: 'Snapper Broth', stage: 1, cost: { meat: 1, snapperScale: 1, herb: 1 }, buff: { dodgeCost: 0.25, defense: 0.08 }, desc: 'Dodges cost 25% less stamina, +8% defence', purpose: 'Defensive broth that reduces dodge roll stamina cost by 25% and adds 8% armor.' },
+  brimstoneSkewer: { id: 'brimstoneSkewer', name: 'Brimstone Skewer', stage: 2, cost: { meat: 1, sulfur: 1 }, buff: { attack: 0.12, heatSlow: 0.6 }, desc: '+12% attack, caldera heat drains 60% slower', purpose: 'Offensive skewer adding +12% attack damage and 60% caldera heat protection.' },
 }
 export const MEAL_ORDER: MealId[] = ['heartyHaunch', 'trailStew', 'snapperBroth', 'brimstoneSkewer']
 export type SearQuality = 'perfect' | 'good' | 'charred'
@@ -104,6 +104,7 @@ export type GearDef = {
   id: GearId; name: string; slot: GearSlot; tier: number; desc: string
   attack?: number; defense?: number; hp?: number; heatProof?: boolean
   cls?: WeaponClass
+  purpose?: string /* CODEX TEXT */
 }
 /** Moveset tuning per weapon class. */
 export type ClassDef = { name: string; speed: number; motion: number; reach: number; arc: number; desc: string }
@@ -119,21 +120,21 @@ export const COUNTER_MULT = 2.2
 export const SLING_RANGE = 18
 
 export const GEAR: Record<GearId, GearDef> = {
-  club: { id: 'club', name: 'Knotted Club', slot: 'weapon', tier: 0, attack: 12, cls: 'club', desc: 'A trusty knot of hardwood.' },
-  flintMaul: { id: 'flintMaul', name: 'Flint Maul', slot: 'weapon', tier: 1, attack: 19, cls: 'maul', desc: 'Flint head lashed to a heavy haft.' },
-  amberHammer: { id: 'amberHammer', name: 'Amber Tusk Hammer', slot: 'weapon', tier: 2, attack: 29, cls: 'maul', desc: 'Glowing amber set between tusks.' },
-  obsidianClub: { id: 'obsidianClub', name: 'Obsidian Greatclub', slot: 'weapon', tier: 3, attack: 44, cls: 'club', desc: 'Volcanic glass spikes on a horn core.' },
-  boneSpear: { id: 'boneSpear', name: 'Bone Spear', slot: 'weapon', tier: 1, attack: 17, cls: 'spear', desc: 'A flint-tipped bone shaft. Long reach, counter-thrusts.' },
-  stalkerLance: { id: 'stalkerLance', name: 'Stalker Lance', slot: 'weapon', tier: 2, attack: 27, cls: 'spear', desc: 'Dunestalker claw on a bound shaft.' },
-  reedSling: { id: 'reedSling', name: 'Reed Sling', slot: 'weapon', tier: 1, attack: 12, cls: 'sling', desc: 'Braided reed and hide. Throws stones from 18 m.' },
-  sinewSling: { id: 'sinewSling', name: 'Stalker Sinew Sling', slot: 'weapon', tier: 2, attack: 19, cls: 'sling', desc: 'Sinew cords on a bone grip. Hard-hitting shots.' },
-  leafWraps: { id: 'leafWraps', name: 'Leaf Wraps', slot: 'armor', tier: 0, defense: 0, hp: 0, desc: 'Leaves, mostly.' },
-  hideGarb: { id: 'hideGarb', name: 'Bristlehide Garb', slot: 'armor', tier: 1, defense: 0.15, hp: 15, desc: 'Hide and scale tunic.' },
-  stalkerPlate: { id: 'stalkerPlate', name: 'Stalker Bone Plate', slot: 'armor', tier: 2, defense: 0.27, hp: 30, desc: 'Bone plates over striped hide.' },
-  ashguardMantle: { id: 'ashguardMantle', name: 'Ashguard Mantle', slot: 'armor', tier: 3, defense: 0.38, hp: 45, heatProof: true, desc: 'Ruinhorn plates under cinder fur. Shrugs off caldera heat.' },
-  boneKnife: { id: 'boneKnife', name: 'Bone Carving Knife', slot: 'tool', tier: 1, desc: 'One extra carve from every hunt.' },
-  flintHatchet: { id: 'flintHatchet', name: 'Flint Hatchet', slot: 'tool', tier: 1, attack: 9, desc: 'Fells trees in a couple of swings. Hold it with 2.' },
-  flintPick: { id: 'flintPick', name: 'Flint Pick', slot: 'tool', tier: 1, attack: 10, desc: 'Breaks boulders fast and opens Amberite veins and Obsidian. Hold it with 3.' },
+  club: { id: 'club', name: 'Knotted Club', slot: 'weapon', tier: 0, attack: 12, cls: 'club', desc: 'A trusty knot of hardwood.', purpose: 'Starting weapon: balanced three-hit light combo and reliable charged smash.' },
+  flintMaul: { id: 'flintMaul', name: 'Flint Maul', slot: 'weapon', tier: 1, attack: 19, cls: 'maul', desc: 'Flint head lashed to a heavy haft.', purpose: 'Heavy blunt weapon: slower swings that stagger beasts on full charge.' },
+  amberHammer: { id: 'amberHammer', name: 'Amber Tusk Hammer', slot: 'weapon', tier: 2, attack: 29, cls: 'maul', desc: 'Glowing amber set between tusks.', purpose: 'Tier II war hammer: massive concussive force to reliably shatter monster poise.' },
+  obsidianClub: { id: 'obsidianClub', name: 'Obsidian Greatclub', slot: 'weapon', tier: 3, attack: 44, cls: 'club', desc: 'Volcanic glass spikes on a horn core.', purpose: 'Apex club: the highest base attack weapon on Cinderfall Isle.' },
+  boneSpear: { id: 'boneSpear', name: 'Bone Spear', slot: 'weapon', tier: 1, attack: 17, cls: 'spear', desc: 'A flint-tipped bone shaft. Long reach, counter-thrusts.', purpose: 'Thrusting weapon: long reach that triggers ×2.2 counter-thrusts after dodging.' },
+  stalkerLance: { id: 'stalkerLance', name: 'Stalker Lance', slot: 'weapon', tier: 2, attack: 27, cls: 'spear', desc: 'Dunestalker claw on a bound shaft.', purpose: 'Tier II polearm: lethal counter-thrusts and safe engagement distance.' },
+  reedSling: { id: 'reedSling', name: 'Reed Sling', slot: 'weapon', tier: 1, attack: 12, cls: 'sling', desc: 'Braided reed and hide. Throws stones from 18 m.', purpose: 'Ranged weapon: expends stones to harass beasts from up to 18 meters away.' },
+  sinewSling: { id: 'sinewSling', name: 'Stalker Sinew Sling', slot: 'weapon', tier: 2, attack: 19, cls: 'sling', desc: 'Sinew cords on a bone grip. Hard-hitting shots.', purpose: 'High-power sling: heavier ranged impact to stagger charging predators.' },
+  leafWraps: { id: 'leafWraps', name: 'Leaf Wraps', slot: 'armor', tier: 0, defense: 0, hp: 0, desc: 'Leaves, mostly.', purpose: 'Rudimentary coverings offering minimal environmental protection.' },
+  hideGarb: { id: 'hideGarb', name: 'Bristlehide Garb', slot: 'armor', tier: 1, defense: 0.15, hp: 15, desc: 'Hide and scale tunic.', purpose: 'Tier I defense: provides +15 health and absorbs 15% of physical damage.' },
+  stalkerPlate: { id: 'stalkerPlate', name: 'Stalker Bone Plate', slot: 'armor', tier: 2, defense: 0.27, hp: 30, desc: 'Bone plates over striped hide.', purpose: 'Tier II defense: provides +30 health and 27% damage reduction.' },
+  ashguardMantle: { id: 'ashguardMantle', name: 'Ashguard Mantle', slot: 'armor', tier: 3, defense: 0.38, hp: 45, heatProof: true, desc: 'Ruinhorn plates under cinder fur. Shrugs off caldera heat.', purpose: 'Tier III armor: +45 health, 38% defense, and immune to caldera environmental heat.' },
+  boneKnife: { id: 'boneKnife', name: 'Bone Carving Knife', slot: 'tool', tier: 1, desc: 'One extra carve from every hunt.', purpose: 'Hunting tool: permanently grants +1 extra carve loot from every slain monster.' },
+  flintHatchet: { id: 'flintHatchet', name: 'Flint Hatchet', slot: 'tool', tier: 1, attack: 9, desc: 'Fells trees in a couple of swings. Hold it with 2.', purpose: 'Woodcutting tool (held with 2): fells trees in a fraction of the swings.' },
+  flintPick: { id: 'flintPick', name: 'Flint Pick', slot: 'tool', tier: 1, attack: 10, desc: 'Breaks boulders fast and opens Amberite veins and Obsidian. Hold it with 3.', purpose: 'Mining tool (held with 3): rapidly mines stone and extracts amberite and obsidian veins.' },
 }
 
 // ─── Held item & harvesting (Minecraft-style chopping and mining) ──────────
@@ -248,6 +249,9 @@ export type SpeciesDef = {
   prey?: SpeciesId[]
   print: PrintKind
   habitat: string
+  diet?: string /* CODEX TEXT */
+  purpose?: string /* CODEX TEXT */
+  temperament?: 'hostile' | 'passive' | 'neutral' /* CODEX TEXT */
 }
 export type HitZone = 'head' | 'flank' | 'rear'
 export type PrintKind = 'hoof' | 'webbed' | 'talon' | 'insect' | 'paw' | 'giant' | 'wyrm'
@@ -261,6 +265,9 @@ const atk = (a: AttackDef): AttackDef => a
 export const SPECIES: Record<SpeciesId, SpeciesDef> = {
   tuskhog: {
     id: 'tuskhog', name: 'Tuskhog', title: 'Bristle-backed jungle boar', region: 'coast', boss: false,
+    temperament: 'hostile', /* CODEX TEXT */
+    diet: 'Roots through jungle soil, fallen fruits, palm shoots, and low shrubs.', /* CODEX TEXT */
+    purpose: 'Early wild beast offering vital tusks, hides, bones, and raw meat.', /* CODEX TEXT */
     weak: { zone: 'flank', mult: 1.35, label: 'Flank' }, print: 'hoof',
     habitat: 'Roots through the palm groves and forest edge of the jungle coast. Hunted by Dunestalkers and ambushed by Mudsnappers at the shore.',
     hp: 110, poise: 40, walk: 2.4, run: 7, turn: 5, radius: 1.1, height: 1.3, aggro: 16, leash: 42, carves: 2,
@@ -274,6 +281,9 @@ export const SPECIES: Record<SpeciesId, SpeciesDef> = {
   },
   mudsnapper: {
     id: 'mudsnapper', name: 'Mudsnapper', title: 'Shoreline ambush lizard', region: 'coast', boss: false,
+    temperament: 'hostile', /* CODEX TEXT */
+    diet: 'Carnivorous ambush predator; hunts tuskhogs and shore animals at the water line.', /* CODEX TEXT */
+    purpose: 'Coastal hazard dropping water-resistant snapper scales for early armor and broth.', /* CODEX TEXT */
     weak: { zone: 'head', mult: 1.3, label: 'Head' }, prey: ['tuskhog'], print: 'webbed',
     habitat: 'Lies half-buried in the wet sand of the tideline. Ambushes Tuskhogs that stray to the water.',
     hp: 80, poise: 30, walk: 2.0, run: 6.2, turn: 6, radius: 1.0, height: 0.9, aggro: 13, leash: 34, carves: 2,
@@ -287,6 +297,9 @@ export const SPECIES: Record<SpeciesId, SpeciesDef> = {
   },
   dunestalker: {
     id: 'dunestalker', name: 'Dunestalker', title: 'Pack-hunting sand raptor', region: 'highlands', boss: false,
+    temperament: 'hostile', /* CODEX TEXT */
+    diet: 'Pack carnivore; cooperatively runs down tuskhogs and wild game across the open plateau.', /* CODEX TEXT */
+    purpose: 'Agile mid-game predator yielding razor claws and hides for tier II spears and armor.', /* CODEX TEXT */
     weak: { zone: 'rear', mult: 1.3, label: 'Tail' }, prey: ['tuskhog'], print: 'talon',
     habitat: 'Roams the amber grass of the highlands in small packs. Preys on Tuskhogs; flees from Ashfangs.',
     hp: 130, poise: 45, walk: 3, run: 8.4, turn: 7, radius: 0.9, height: 1.8, aggro: 22, leash: 50, carves: 2,
@@ -300,6 +313,9 @@ export const SPECIES: Record<SpeciesId, SpeciesDef> = {
   },
   emberbeetle: {
     id: 'emberbeetle', name: 'Emberbeetle', title: 'Armoured magma-spitting beetle', region: 'caldera', boss: false,
+    temperament: 'hostile', /* CODEX TEXT */
+    diet: 'Mineralivore; feeds on geothermal sulfur crusts and volcanic obsidian residue.', /* CODEX TEXT */
+    purpose: 'Armored caldera defender dropping flame-tempered carapaces for obsidian weapons.', /* CODEX TEXT */
     weak: { zone: 'rear', mult: 1.45, label: 'Soft underside' }, print: 'insect',
     habitat: 'Crawls over warm obsidian near lava vents in the caldera, grazing on sulfur crust.',
     hp: 210, poise: 90, walk: 1.6, run: 4, turn: 3, radius: 1.35, height: 1.3, aggro: 18, leash: 40, carves: 2,
@@ -313,6 +329,9 @@ export const SPECIES: Record<SpeciesId, SpeciesDef> = {
   },
   ashfang: {
     id: 'ashfang', name: 'Ashfang', title: 'Cinder-maned hunting hound', region: 'caldera', boss: false,
+    temperament: 'hostile', /* CODEX TEXT */
+    diet: 'Fierce carnivore; stalks Dunestalkers across the ash fields and drags them into the rocks.', /* CODEX TEXT */
+    purpose: 'High-speed predator providing heat-resistant pelts for caldera exploration.', /* CODEX TEXT */
     weak: { zone: 'flank', mult: 1.3, label: 'Flank' }, prey: ['dunestalker'], print: 'paw',
     habitat: 'Hunts the ash slopes where the highlands meet the caldera. Chases Dunestalkers down from the plateau.',
     hp: 150, poise: 50, walk: 3, run: 9, turn: 7, radius: 1.0, height: 1.4, aggro: 20, leash: 46, carves: 2,
@@ -326,6 +345,9 @@ export const SPECIES: Record<SpeciesId, SpeciesDef> = {
   },
   ruinhorn: {
     id: 'ruinhorn', name: 'Ruinhorn', title: 'Tyrant of the Sunken Ruins', region: 'highlands', boss: true,
+    temperament: 'hostile', /* CODEX TEXT */
+    diet: 'Crushes ancient stone masonry, mineral moss, and hardy highland vegetation.', /* CODEX TEXT */
+    purpose: 'Highland Apex Boss; drops Ruinhorn Plates and the Crest needed to raise the Signal Tower.', /* CODEX TEXT */
     weak: { zone: 'rear', mult: 1.25, label: 'Hind legs' }, print: 'giant',
     habitat: 'Guards the Sunken Ruins east of the highland ramp. Its three-toed prints crack the flagstones.',
     hp: 1150, poise: 190, walk: 2.4, run: 7.4, turn: 2.6, radius: 2.7, height: 5.2, aggro: 30, leash: 36, carves: 3,
@@ -343,6 +365,9 @@ export const SPECIES: Record<SpeciesId, SpeciesDef> = {
   },
   vulkarr: {
     id: 'vulkarr', name: 'Vulkarr', title: 'Wyrm of the Cinder Caldera', region: 'caldera', boss: true,
+    temperament: 'hostile', /* CODEX TEXT */
+    diet: 'Consumes molten minerals and raw thermal energy from the heart of the volcano.', /* CODEX TEXT */
+    purpose: 'Final Apex Boss; yields the Magma Heart needed to ignite the Signal Tower beacon.', /* CODEX TEXT */
     weak: { zone: 'head', mult: 1.25, label: 'Glowing throat' }, print: 'wyrm',
     habitat: 'Nests in the heart of the Cinder Caldera, beyond the Breach canyon. The ground is scorched where it walks.',
     hp: 1750, poise: 250, walk: 2.2, run: 7, turn: 2.4, radius: 3.0, height: 5.6, aggro: 26, leash: 30, carves: 3,

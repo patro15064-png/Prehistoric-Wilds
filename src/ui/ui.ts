@@ -7,6 +7,7 @@ import type { Game, Hooks, MenuTab, PopupKind, StampKind } from '../game/game'
 import type { SaveData, SaveStore } from '../engine/save'
 import { gearIcon, icon } from './icons'
 import { UiFx } from './uifx'
+import { CodexManager, type CodexTab } from '../game/codex' // CODEX HOOK
 
 /** Painted item icons (public/ui/icons/<id>.webp); SVG fallback for anything else. */
 const PAINTED = new Set<string>(['amber', 'ashfangPelt', 'bone', 'emberCarapace', 'fiber', 'flint', 'herb', 'hogTusk', 'hornShard', 'magmaHeart', 'obsidian', 'poultice', 'roughHide', 'ruinCrest', 'ruinPlate', 'scorchScale', 'snapperScale', 'stalkerClaw', 'stalkerHide', 'stone', 'sulfur', 'wood', 'meat', 'glowcap', 'snare', 'pitfall', 'flashPod'])
@@ -111,6 +112,7 @@ export class Ui {
   private sear: { id: MealId; t: number; done: boolean } | null = null
   private searClock = 0
   private journalSel: SpeciesId = 'tuskhog'
+  readonly codex = new CodexManager() // CODEX HOOK
 
   constructor(private readonly save: SaveStore, private readonly actions: UiActions) {
     this.root = document.querySelector('#ui')!
@@ -394,7 +396,7 @@ export class Ui {
 
   private onClick(e: MouseEvent): void {
     const t = e.target as HTMLElement
-    const tabBtn = t.closest<HTMLElement>('[data-tab]')
+    const tabBtn = t.closest<HTMLElement>('header.tabs > [data-tab]')
     if (tabBtn) {
       this.game?.audio.play('ui')
       this.renderMenu(tabBtn.dataset.tab as MenuTab)
@@ -476,7 +478,52 @@ export class Ui {
         break
       case 'jsel':
         this.journalSel = b.dataset.id as SpeciesId
+        this.codex.selectMob(b.dataset.id!) // CODEX HOOK
         g?.audio.play('page')
+        this.renderMenu('journal')
+        break
+      // CODEX HOOK: In-game Codex navigation & filtering
+      case 'codex-tab':
+        this.codex.selectTab((b.dataset.codexTab ?? b.dataset.tab) as CodexTab)
+        g?.audio.play('page')
+        this.renderMenu('journal')
+        break
+      case 'codex-sel':
+        if (this.codex.activeTab === 'mobs') this.codex.selectedMobId = b.dataset.id!
+        else if (this.codex.activeTab === 'items') this.codex.selectedItemId = b.dataset.id!
+        else this.codex.selectedRecipeId = b.dataset.id!
+        g?.audio.play('page')
+        this.renderMenu('journal')
+        break
+      case 'codex-cat':
+        this.codex.categoryFilter = b.dataset.val!
+        this.renderMenu('journal')
+        break
+      case 'codex-src':
+        this.codex.sourceFilter = b.dataset.val!
+        this.renderMenu('journal')
+        break
+      case 'codex-sort':
+        this.codex.sortAbundanceDesc = !this.codex.sortAbundanceDesc
+        this.renderMenu('journal')
+        break
+      case 'codex-jump-item':
+        this.codex.selectItem(b.dataset.id!)
+        g?.audio.play('page')
+        this.renderMenu('journal')
+        break
+      case 'codex-jump-mob':
+        this.codex.selectMob(b.dataset.id!)
+        g?.audio.play('page')
+        this.renderMenu('journal')
+        break
+      case 'codex-jump-recipe':
+        this.codex.selectRecipe(b.dataset.id!)
+        g?.audio.play('page')
+        this.renderMenu('journal')
+        break
+      case 'codex-clear-search':
+        this.codex.searchTerm = ''
         this.renderMenu('journal')
         break
       case 'equip':
@@ -509,6 +556,17 @@ export class Ui {
 
   private onInput(e: Event): void {
     const inp = e.target as HTMLInputElement | HTMLSelectElement
+    // CODEX HOOK: Live search input for in-game Codex
+    if (inp.dataset.act === 'codex-search') {
+      this.codex.searchTerm = inp.value
+      this.renderMenu('journal')
+      const newInp = this.root.querySelector<HTMLInputElement>('[data-act="codex-search"]')
+      if (newInp) {
+        newInp.focus()
+        newInp.setSelectionRange(inp.value.length, inp.value.length)
+      }
+      return
+    }
     const key = inp.dataset.set as keyof SaveData | undefined
     if (!key) return
     let v: unknown
@@ -520,6 +578,10 @@ export class Ui {
 
   private onKey(e: KeyboardEvent): void {
     if (e.repeat) return
+    // CODEX HOOK: Don't hijack keystrokes when typing into codex search input
+    if (e.target instanceof HTMLInputElement && e.code !== 'Escape') {
+      return
+    }
     if (this.mapOpen && (e.code === 'Escape' || e.code === 'KeyM')) {
       e.preventDefault()
       this.closeMap()
@@ -785,6 +847,12 @@ export class Ui {
   }
 
   private journalHtml(g: Game): string {
+    // CODEX HOOK: Upgrade journal into full in-game Codex (Mobs, Items, Recipes)
+    return this.codex.render(g)
+  }
+
+  /** Retained for legacy mob viewer fallback if needed. */
+  legacyJournalHtml(g: Game): string {
     const p = g.progress
     const ids = Object.keys(SPECIES) as SpeciesId[]
     const list = ids.map(sp => {
