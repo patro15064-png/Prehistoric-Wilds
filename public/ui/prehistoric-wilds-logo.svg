@@ -1,0 +1,12 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 360" role="img" aria-labelledby="title desc">
+  <title id="title">Prehistoric Wilds</title>
+  <desc id="desc">A warm carved-stone game logo with a leaf-and-bone emblem.</desc>
+  <defs>
+    <linearGradient id="stone" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff4d1"/><stop offset="0.5" stop-color="#f2c77d"/><stop offset="1" stop-color="#b9682d"/></linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#ffd86f"/><stop offset="0.5" stop-color="#f18d2c"/><stop offset="1" stop-color="#ffd86f"/></linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="9" stdDeviation="5" flood-color="#160902" flood-opacity="0.8"/></filter>
+  </defs>
+  <g filter="url(#shadow)" stroke="#4a1e08" stroke-linejoin="round"><path d="M78 256 C28 225 26 138 84 104 C140 70 190 96 207 136 C193 92 216 42 264 30 C250 86 282 116 311 137 C292 71 328 28 383 16 C375 77 403 105 447 125 C432 68 474 36 530 34 C510 101 549 135 588 160 C626 134 665 99 651 37 C705 52 730 103 707 157 C746 131 793 92 775 34 C835 66 853 128 812 174 C872 135 936 134 1002 168 C924 183 887 221 857 266 C716 315 245 321 78 256Z" fill="url(#stone)" stroke-width="10"/><path d="M166 244 C224 272 785 283 965 230" fill="none" stroke="#8a3a12" stroke-width="10" opacity="0.7"/></g>
+  <g text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-weight="900" letter-spacing="8" filter="url(#shadow)"><text x="600" y="157" font-size="112" fill="url(#stone)" stroke="#4a1e08" stroke-width="12" paint-order="stroke">PREHISTORIC</text><text x="600" y="258" font-size="105" fill="url(#gold)" stroke="#4a1e08" stroke-width="12" paint-order="stroke">WILDS</text></g>
+  <g fill="none" stroke="#ffe0a0" stroke-linecap="round" opacity="0.7"><path d="M156 291 C300 326 900 329 1048 286" stroke-width="5"/><path d="M190 307 C356 342 835 343 1012 302" stroke-width="2"/></g>
+</svg>

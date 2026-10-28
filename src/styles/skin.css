@@ -43,9 +43,9 @@
 
 /* ─── Boot / loading ─── */
 .boot { background: #120a06; overflow: hidden; }
-.boot-bg { position: absolute; inset: -5%; background: url('/ui/loading-bg.webp') center / cover no-repeat; animation: kenburns 22s ease-in-out infinite alternate; }
-.boot-bg::after { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 42%, rgba(0, 0, 0, 0) 30%, rgba(8, 4, 2, 0.75) 100%), linear-gradient(0deg, rgba(10, 5, 2, 0.85), rgba(10, 5, 2, 0) 45%); }
-@keyframes kenburns { from { transform: scale(1) translate(0, 0); } to { transform: scale(1.1) translate(-1.5%, -1%); } }
+/* Keep startup clean and immediate when no verified local photograph is available. */
+.boot-bg { position: absolute; inset: -5%; background: linear-gradient(145deg, #0c0907 0%, #2d1c10 48%, #15100b 100%); }
+.boot-bg::after { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 42%, rgba(255, 190, 90, 0.08), rgba(8, 4, 2, 0.78) 78%), linear-gradient(0deg, rgba(10, 5, 2, 0.82), rgba(10, 5, 2, 0) 52%); }
 .boot-embers { position: absolute; inset: 0; pointer-events: none; background-image:
   radial-gradient(2px 2px at 12% 90%, #ffb45a, transparent), radial-gradient(3px 3px at 28% 80%, #ff8a2a, transparent),
   radial-gradient(2px 2px at 46% 95%, #ffd27a, transparent), radial-gradient(3px 3px at 63% 85%, #ff9a3a, transparent),

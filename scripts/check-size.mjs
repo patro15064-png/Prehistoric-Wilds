@@ -27,8 +27,7 @@ const stage = name => manifest[name].reduce((n, u) => {
   if (!existsSync(p)) { console.error(`missing manifest file: ${u}`); process.exitCode = 1; return n }
   return n + statSync(p).size
 }, 0)
-const loadingBg = existsSync('dist/ui/loading-bg.webp') ? statSync('dist/ui/loading-bg.webp').size : 0
-const boot = js + css + fonts + loadingBg + stage('boot')
+const boot = js + css + fonts + stage('boot')
 const mb = n => `${(n / MB).toFixed(2)} MB`
 console.log(`bundle (gzip): js ${mb(js)} / fonts ${mb(fonts)} / boot (blocks title) ${mb(boot)}`)
 console.log(`streamed after title: coast ${mb(stage('coast'))} / highlands ${mb(stage('highlands'))} / caldera ${mb(stage('caldera'))} / total dist ${mb(total)}`)

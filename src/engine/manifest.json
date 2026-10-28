@@ -4,9 +4,8 @@
     "/models/hunter-anims.glb",
     "/models/w-club.glb",
     "/models/tuskhog.glb",
-    "/ui/logo.webp",
-    "/ui/med-heart.webp",
-    "/ui/med-stamina.webp"
+    "/ui/prehistoric-wilds-logo.svg",
+    "/ui/med-heart.webp"
   ],
   "coast": [
     "/models/mudsnapper.glb",

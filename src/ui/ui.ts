@@ -15,7 +15,7 @@ function itemIcon(id: ItemId, size: number): string {
   return PAINTED.has(id) ? `<img class="pi" src="./ui/icons/${id}.webp" width="${size}" height="${size}" alt="" draggable="false">` : icon(it.icon, it.color, size)
 }
 const PAINTED_GEAR = new Set<string>(['boneSpear', 'stalkerLance', 'reedSling', 'sinewSling', 'flintHatchet', 'flintPick'])
-const LOGO = '<img class="logo-img" src="./ui/logo.webp" alt="Caveman vs Wild" draggable="false">'
+const LOGO = '<img class="logo-img" src="./ui/prehistoric-wilds-logo.svg" alt="Prehistoric Wilds" draggable="false">'
 
 export type Screen = 'boot' | 'title' | 'hud' | 'menu' | 'skills' | 'pause' | 'faint' | 'victory'
 export type { MenuTab }
