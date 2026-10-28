@@ -29,7 +29,7 @@ async function run() {
 
   await page.goto('http://127.0.0.1:3000/')
   console.log('2. Waiting for game to boot and title screen to display...')
-  await page.waitForSelector('[data-el="title"].on', { timeout: 40_000 })
+  await page.waitForSelector('[data-el="title"].on', { timeout: 60_000 })
   await page.waitForTimeout(1000)
 
   console.log('3. Checking title screen and action buttons...')

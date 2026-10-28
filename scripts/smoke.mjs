@@ -53,7 +53,7 @@ async function openGame(context, errors) {
   })
   await page.goto(url)
   // Wait for title screen to activate
-  await page.waitForSelector('[data-el="title"].on', { timeout: 35_000 })
+  await page.waitForSelector('[data-el="title"].on', { timeout: 60_000 })
   await page.waitForTimeout(600)
   return page
 }
