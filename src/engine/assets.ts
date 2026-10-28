@@ -76,7 +76,7 @@ export class Assets {
     e.state = 'loading'
     try {
       if (url.endsWith('.glb')) e.value = await this.gltfLoader.loadAsync(url)
-      else if (url.endsWith('.webp') || url.endsWith('.png') || url.endsWith('.jpg')) {
+      else if (url.endsWith('.webp') || url.endsWith('.png') || url.endsWith('.jpg') || url.endsWith('.svg')) {
         if (url.startsWith('/vfx/')) {
           const t = await this.texLoader.loadAsync(url)
           t.colorSpace = THREE.SRGBColorSpace
