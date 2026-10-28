@@ -420,9 +420,9 @@ export class Player implements PlayerLike {
     this.t = 0
   }
 
-  private spend(n: number): void {
-    this.stamina = Math.max(0, this.stamina - n)
-    this.staminaT = CONFIG.player.staminaDelay
+  private spend(_n: number): void {
+    this.stamina = this.maxStamina
+    this.staminaT = 0
   }
 
   receiveHit(damage: number, knock: 'flinch' | 'down', from: { x: number; z: number }, _source: string): HitResult {

@@ -96,7 +96,6 @@ export class Ui {
   private objectiveFlash = 0
   readonly fx: UiFx
   private lastLootId: ItemId | null = null
-  private lastStFlash = false
   private lastPot = -1
   private lastHp = -1
   private victoryT = 0
@@ -166,9 +165,7 @@ export class Ui {
   <div class="vignette low" data-el="vLow"></div>
   <div class="vitals">
     <img class="med heart" data-el="medHeart" src="./ui/med-heart.webp" alt="" draggable="false">
-    <img class="med stam" data-el="medStam" src="./ui/med-stamina.webp" alt="" draggable="false">
     <div class="hpbar" data-el="hpBar"><i class="lost" data-el="hpLost"></i><i class="fill" data-el="hpFill"></i><b class="shine"></b><span data-el="hpText"></span></div>
-    <div class="stbar" data-el="stBar"><i class="fill" data-el="stFill"></i><b class="shine"></b></div>
     <div class="hungerbar" data-el="hungerBar"><i class="fill" data-el="hungerFill"></i><b class="shine"></b><span data-el="hungerText">HUNGER 100%</span></div>
     <div class="vitals-row">
       <div class="chip slot" data-el="potChip" title="Mendleaf Poultice (R)"><img class="pi" src="./ui/icons/poultice.webp" width="26" height="26" alt=""><b data-el="potN">0</b><kbd>R</kbd></div>
@@ -1043,7 +1040,7 @@ export class Ui {
       this.hudRectsAt = now
       const pad = 12
       this.hudRects = []
-      for (const k of ['compass', 'region', 'hotbar', 'gadget', 'obj', 'hpBar', 'stBar', 'medHeart'] as const) {
+      for (const k of ['compass', 'region', 'hotbar', 'gadget', 'obj', 'hpBar', 'hungerBar', 'medHeart'] as const) {
         const el = (this.el as unknown as Record<string, HTMLElement | undefined>)[k]
         if (!el || !el.isConnected) continue
         const r = el.getBoundingClientRect()
@@ -1147,18 +1144,10 @@ export class Ui {
     E.hpFill.style.width = `${(P.hp / P.maxHp) * 100}%`
     E.hpLost.style.width = `${(Math.max(P.hp, P.recentHp) / P.maxHp) * 100}%`
     E.hpText.textContent = `${Math.ceil(P.hp)} / ${P.maxHp}`
-    E.stFill.style.width = `${P.stamina}%`
-    E.stBar.classList.toggle('flash', P.staminaFlash > 0)
     E.hungerFill.style.width = `${p.hunger}%`
     E.hungerText.textContent = `HUNGER ${Math.ceil(p.hunger)}%`
     E.hungerBar.classList.toggle('low', p.hunger < 35)
     E.hungerBar.classList.toggle('critical', p.hunger <= 10)
-    const stFlash = P.staminaFlash > 0.5
-    if (stFlash && !this.lastStFlash) {
-      const [x, y] = this.fx.at(E.stBar, 0.02, 0.5)
-      this.fx.burst(x, y, { color: ['#5ad0ff', '#c8f2ff'], n: 16, speed: 160, kind: 'dot', grav: 200 })
-    }
-    this.lastStFlash = stFlash
     const pot = g.progress.inv.poultice ?? 0
     if (this.lastPot >= 0 && pot < this.lastPot) {
       const [x, y] = this.fx.at(E.medHeart)
@@ -1170,7 +1159,6 @@ export class Ui {
     else if (P.hp < P.maxHp) E.medHeart.classList.remove('heal')
     this.lastHp = P.hp
     E.medHeart.classList.toggle('low', P.hp < P.maxHp * 0.3 && P.alive)
-    E.stBar.classList.toggle('low', P.stamina < 25)
     E.potN.textContent = String(g.progress.inv.poultice ?? 0)
     this.updateHotbar(g)
     this.updateHarvestBar(g)

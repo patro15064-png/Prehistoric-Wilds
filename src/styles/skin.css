@@ -69,26 +69,23 @@
 .vitals { padding-left: 84px; width: min(430px, 50vw); top: 18px; left: 18px; }
 .med { position: absolute; pointer-events: none; filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.6)); }
 .med.heart { left: 0; top: -4px; width: 84px; height: 84px; z-index: 2; }
-.med.stam { left: 46px; top: 44px; width: 44px; height: 44px; z-index: 3; }
+.med.stam { display: none; }
 .med.heart.thump { animation: thump 0.32s cubic-bezier(0.3, 1.8, 0.5, 1); }
 @keyframes thump { 30% { transform: scale(1.18) rotate(-4deg); filter: drop-shadow(0 0 14px rgba(255, 60, 40, 0.95)); } }
 .med.heart.low { animation: lowbeat 0.8s ease-in-out infinite; }
 @keyframes lowbeat { 0%, 100% { transform: scale(1); } 15% { transform: scale(1.12); filter: drop-shadow(0 0 16px rgba(255, 40, 30, 0.95)); } 30% { transform: scale(1); } 45% { transform: scale(1.07); } }
 .med.heart.heal { filter: drop-shadow(0 0 16px rgba(120, 255, 130, 0.95)); }
-.hpbar, .stbar { background: none; box-shadow: none; overflow: visible; border-radius: 0; border-style: solid; border-color: transparent; }
+.hpbar { background: none; box-shadow: none; overflow: visible; border-radius: 0; border-style: solid; border-color: transparent; }
 .hpbar { height: 34px; border-width: 9px 20px; margin-top: 8px; }
-.stbar { height: 22px; border-width: 6px 16px; width: 82%; margin-top: 4px; }
-.hpbar::before, .stbar::before { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(10, 4, 2, 0.85), rgba(40, 20, 10, 0.8)); border-radius: 3px; }
-.hpbar::after, .stbar::after { content: ''; position: absolute; pointer-events: none; z-index: 4; border-style: solid; border-color: transparent; border-image: url('/ui/bar-frame.webp') 30 70 fill / 100% stretch; }
+.hpbar::before { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(10, 4, 2, 0.85), rgba(40, 20, 10, 0.8)); border-radius: 3px; }
+.hpbar::after { content: ''; position: absolute; pointer-events: none; z-index: 4; border-style: solid; border-color: transparent; border-image: url('/ui/bar-frame.webp') 30 70 fill / 100% stretch; }
 .hpbar::after { inset: -9px -20px; border-image-width: 9px 20px; }
-.stbar::after { inset: -6px -16px; border-image-width: 6px 16px; }
-.hpbar i, .stbar i { border-radius: 3px; }
+.stbar { display: none; }
+.hpbar i { border-radius: 3px; }
 .hpbar .fill { background: linear-gradient(180deg, #ff7a5a 0%, #e2412b 45%, #a8221a 100%); box-shadow: inset 0 2px 0 rgba(255, 220, 200, 0.5), 0 0 12px rgba(255, 70, 40, 0.55); }
 .hpbar .lost { background: linear-gradient(180deg, #fff6e0, #ffd0a0); }
 .hpbar span { z-index: 5; right: 4px; font: 800 12px/16px var(--display); top: 0; }
-.stbar .fill { background: linear-gradient(180deg, #fff29a 0%, #f2c43a 45%, #b8861a 100%); box-shadow: inset 0 1px 0 rgba(255, 255, 230, 0.6), 0 0 10px rgba(255, 210, 60, 0.5); }
-.stbar.low .fill { background: linear-gradient(180deg, #ffb46a, #d86a1a); }
-.hpbar .shine, .stbar .shine { position: absolute; inset: 0; z-index: 3; pointer-events: none; background: linear-gradient(100deg, transparent 30%, rgba(255, 255, 255, 0.35) 45%, transparent 60%); background-size: 250% 100%; animation: shine 3.6s ease-in-out infinite; mix-blend-mode: overlay; border-radius: 3px; }
+.hpbar .shine { position: absolute; inset: 0; z-index: 3; pointer-events: none; background: linear-gradient(100deg, transparent 30%, rgba(255, 255, 255, 0.35) 45%, transparent 60%); background-size: 250% 100%; animation: shine 3.6s ease-in-out infinite; mix-blend-mode: overlay; border-radius: 3px; }
 @keyframes shine { from { background-position: 150% 0; } to { background-position: -100% 0; } }
 .vitals-row { margin-top: 12px; margin-left: -6px; }
 .chip { background: var(--wood); border-color: var(--wood-line); box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35); }
@@ -332,8 +329,7 @@
 .map-panel .map-wrap { box-shadow: 0 7px 22px rgba(0, 0, 0, 0.55); }
 @media (max-width: 760px) { .map-panel { padding: 12px; } .map-meta { font-size: 10px; } }
 
-/* Caveman survival additions */
-.hungerbar { position: relative; height: 20px; margin-top: 4px; border: 6px solid transparent; border-radius: 0; border-image: url('/ui/bar-frame.webp') 30 70 fill / 6px 16px stretch; overflow: visible; background: rgba(20, 10, 4, 0.78); }
+.hungerbar { position: relative; height: 22px; width: 84%; margin-top: 6px; border: 6px solid transparent; border-radius: 0; border-image: url('/ui/bar-frame.webp') 30 70 fill / 6px 16px stretch; overflow: visible; background: rgba(20, 10, 4, 0.78); }
 .hungerbar::before { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(10, 4, 2, 0.85), rgba(40, 20, 10, 0.8)); border-radius: 3px; }
 .hungerbar .fill { position: absolute; left: 0; top: 0; bottom: 0; z-index: 1; border-radius: 3px; background: linear-gradient(180deg, #b8e66c, #6b9e32 55%, #3f651f); box-shadow: inset 0 2px 0 rgba(240, 255, 190, 0.45), 0 0 10px rgba(130, 220, 80, 0.45); transition: width 0.12s; }
 .hungerbar .shine { position: absolute; inset: 0; z-index: 3; pointer-events: none; border-radius: 3px; background: linear-gradient(100deg, transparent 30%, rgba(255, 255, 255, 0.28) 45%, transparent 60%); background-size: 250% 100%; animation: shine 3.6s ease-in-out infinite; mix-blend-mode: overlay; }

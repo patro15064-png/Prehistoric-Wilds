@@ -685,12 +685,13 @@ export class Game {
     this.hooks.tip(id, html)
   }
 
-  /** Food is a light survival pressure rather than a hard timer: moving and sprinting burn more. */
+  /** Food is a light survival pressure rather than a hard timer: moving and sprinting burn more; idle drain is almost negligible. */
   private updateHunger(dt: number): void {
     const P = this.player
     if (this.mode !== 'playing' || !P.alive) return
     const moving = Math.hypot(P.vel.x, P.vel.z) > 0.35
-    const rate = P.sprinting ? 1.2 : moving ? 0.48 : 0.2
+    const acting = P.state === 'attack' || P.state === 'charge' || P.state === 'heavy' || P.state === 'dodge'
+    const rate = P.sprinting ? 1.0 : moving ? 0.35 : acting ? 0.25 : 0.005
     this.progress.hunger = Math.max(0, this.progress.hunger - rate * dt)
     if (this.progress.hunger <= 24) this.tip('hunger', 'Your <b>hunger</b> is low. Hunt ordinary wildlife, carve the carcass, and cook a meal at the camp hearth.')
     if (this.progress.hunger <= 0) {
