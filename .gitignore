@@ -18,6 +18,11 @@ scratch/
 .env.*
 !.env.example
 
+# IDE & local workspace settings
+.vscode/
+.idea/
+*.local
+
 # OS metadata
 .DS_Store
 Thumbs.db
