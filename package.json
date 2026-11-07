@@ -10,8 +10,7 @@
     "sync:check": "node scripts/sync-readme.mjs --check",
     "build": "node scripts/sync-readme.mjs && tsc --noEmit && vite build && node scripts/check-size.mjs",
     "build:pages": "node scripts/sync-readme.mjs && tsc --noEmit && vite build",
-    "deploy": "npx wrangler deploy --assets=./dist",
-    "deploy:pages": "wrangler pages deploy dist",
+    "deploy": "pnpm run build",
     "build:share": "node scripts/manus-game-assets/restore.mjs && node scripts/manus-game-sharing/build.mjs",
     "preview": "vite preview --port 4173 --strictPort",
     "typecheck": "tsc --noEmit",
@@ -35,8 +34,7 @@
     "sharp": "^0.35.5",
     "typescript": "^5.9.3",
     "vite": "^8.3.1",
-    "vitest": "^5.0.2",
-    "wrangler": "^4.158.0"
+    "vitest": "^5.0.2"
   },
   "packageManager": "pnpm@10.18.0"
 }
