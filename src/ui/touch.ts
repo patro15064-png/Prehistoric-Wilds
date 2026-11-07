@@ -125,11 +125,11 @@ export class TouchControls {
       </div>
 
       <!-- Left Touch Zone for Virtual Joystick -->
-      <div class="touch-joystick-zone">
-        <div class="touch-joystick-base">
-          <div class="touch-joystick-ring"></div>
-          <div class="touch-joystick-knob"></div>
-        </div>
+      <!-- FIX: Keep joystick base directly under touch-layer viewport coordinates so it never gets pushed off-screen -->
+      <div class="touch-joystick-zone"></div>
+      <div class="touch-joystick-base">
+        <div class="touch-joystick-ring"></div>
+        <div class="touch-joystick-knob"></div>
       </div>
 
       <!-- Right Touch-Look Area (Camera dragging) -->
@@ -212,14 +212,31 @@ export class TouchControls {
       this.root.classList.add('touch-capable')
       this.input.method = 'touch'
 
-      // Clamp center to safe area within left touch zone
-      const margin = 55
-      const cx = Math.max(margin, Math.min(clientX, window.innerWidth * 0.48 - margin))
-      const cy = Math.max(margin, Math.min(clientY, window.innerHeight - margin))
+      // FIX: Check if touch is near the resting joystick position
+      const r = base.getBoundingClientRect()
+      const defX = r.width > 0 ? r.left + r.width / 2 : 85
+      const defY = r.height > 0 ? r.top + r.height / 2 : window.innerHeight - 85
+      const distToDef = Math.hypot(clientX - defX, clientY - defY)
+
+      let cx: number
+      let cy: number
+      if (distToDef < 75) {
+        cx = defX
+        cy = defY
+      } else {
+        // Safe clamp center to visible area in left half of screen
+        const minX = 64
+        const maxX = Math.max(minX, window.innerWidth * 0.44)
+        const minY = Math.max(64, window.innerHeight * 0.35)
+        const maxY = window.innerHeight - 64
+        cx = Math.max(minX, Math.min(clientX, maxX))
+        cy = Math.max(minY, Math.min(clientY, maxY))
+      }
       this.joyBaseCenter = { x: cx, y: cy }
 
       base.style.left = `${cx}px`
       base.style.top = `${cy}px`
+      base.style.bottom = 'auto'
       base.classList.add('active')
       knob.style.transform = 'translate(-50%, -50%)'
     }
@@ -253,6 +270,10 @@ export class TouchControls {
       if (this.joystickPointerId !== pointerId) return
       this.joystickPointerId = null
       this.input.setTouchMove(0, 0)
+      // FIX: Cleanly restore resting position when finger lifts
+      base.style.left = ''
+      base.style.top = ''
+      base.style.bottom = ''
       base.classList.remove('active')
       knob.style.transform = 'translate(-50%, -50%)'
     }
@@ -537,6 +558,10 @@ export class TouchControls {
   reset(): void {
     this.joystickPointerId = null
     this.lookPointerId = null
+    // FIX: Cleanly reset joystick inline styles to restore visible resting position
+    this.joyBase.style.left = ''
+    this.joyBase.style.top = ''
+    this.joyBase.style.bottom = ''
     this.joyBase.classList.remove('active')
     this.joyKnob.style.transform = 'translate(-50%, -50%)'
     this.activeButtons.clear()

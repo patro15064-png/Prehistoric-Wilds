@@ -212,7 +212,7 @@ b.open { color: var(--open); }
 .hints { position: absolute; left: 24px; bottom: 20px; font-size: 12px; color: var(--muted); display: flex; gap: 6px; align-items: center; opacity: 0.85; }
 .hints kbd { margin-left: 8px; }
 .hints kbd:first-child { margin-left: 0; }
-.region { position: absolute; right: 24px; bottom: 20px; font: 700 12px var(--display); letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6); }
+.region { position: absolute; left: 50%; top: calc(max(10px, env(safe-area-inset-top)) + 88px); transform: translateX(-50%); width: 220px; text-align: center; font: 700 11px var(--display); letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8); pointer-events: none; }
 
 /* ─── Menu (satchel) ─── */
 .menu { background: rgba(10, 6, 3, 0.45); }
@@ -408,8 +408,8 @@ b.open { color: var(--open); }
   position: absolute;
   left: 0;
   bottom: 0;
-  width: 45vw;
-  height: 60vh;
+  width: 48vw;
+  height: 65vh;
   pointer-events: auto;
   touch-action: none;
   z-index: 26;
@@ -420,42 +420,43 @@ b.open { color: var(--open); }
   height: 128px;
   border-radius: 50%;
   pointer-events: none;
-  opacity: 0.32;
-  transition: opacity 0.2s;
+  opacity: 0.75; /* FIX: High-contrast visibility in resting state */
+  transition: opacity 0.2s, transform 0.12s ease-out;
   left: max(85px, calc(env(safe-area-inset-left) + 75px));
   bottom: max(85px, calc(env(safe-area-inset-bottom) + 65px));
   transform: translate(-50%, -50%);
+  z-index: 27;
 }
 .touch-joystick-base.active {
-  opacity: 0.95;
+  opacity: 1;
 }
 .touch-joystick-ring {
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  border: 3px solid rgba(255, 214, 150, 0.45);
-  background: radial-gradient(circle, rgba(255, 178, 62, 0.18) 0%, rgba(20, 12, 6, 0.65) 75%);
-  box-shadow: 0 0 24px rgba(0, 0, 0, 0.6), inset 0 0 16px rgba(255, 178, 62, 0.25);
+  border: 3px solid rgba(255, 214, 150, 0.65);
+  background: radial-gradient(circle, rgba(255, 178, 62, 0.25) 0%, rgba(20, 12, 6, 0.78) 75%);
+  box-shadow: 0 0 24px rgba(0, 0, 0, 0.7), inset 0 0 16px rgba(255, 178, 62, 0.35);
 }
 .touch-joystick-ring::after {
   content: '';
   position: absolute;
   inset: 22px;
   border-radius: 50%;
-  border: 1px dashed rgba(255, 214, 150, 0.25);
+  border: 1.5px dashed rgba(255, 214, 150, 0.4);
 }
 .touch-joystick-knob {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 54px;
-  height: 54px;
-  margin-left: -27px;
-  margin-top: -27px;
+  width: 56px;
+  height: 56px;
+  margin-left: -28px;
+  margin-top: -28px;
   border-radius: 50%;
-  background: radial-gradient(circle at 35% 35%, #ffe6a0, #e08a24 65%, #683008 100%);
-  border: 2.5px solid #fff2c8;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.65), inset 0 2px 4px rgba(255, 255, 255, 0.6);
+  background: radial-gradient(circle at 35% 35%, #fff0b8, #e08a24 65%, #683008 100%);
+  border: 2.5px solid #fff5d8;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.75), inset 0 2px 4px rgba(255, 255, 255, 0.7);
   pointer-events: none;
   transform: translate(-50%, -50%);
   will-change: transform;
@@ -476,12 +477,12 @@ b.open { color: var(--open); }
 /* Right Thumb Action Cluster */
 .touch-actions-cluster {
   position: absolute;
-  right: max(14px, env(safe-area-inset-right));
-  bottom: max(14px, env(safe-area-inset-bottom));
+  right: max(16px, env(safe-area-inset-right));
+  bottom: max(16px, env(safe-area-inset-bottom));
   width: 290px;
   height: 270px;
   pointer-events: none;
-  z-index: 28;
+  z-index: 35; /* FIX: Above #ui and corner badges so combat buttons are never obscured or blocked */
 }
 .touch-btn {
   position: absolute;
@@ -758,6 +759,28 @@ b.open { color: var(--open); }
   .skills-panel {
     width: 96vw;
     max-height: 92vh;
+  }
+  .compass {
+    width: 72px;
+    height: 72px;
+    top: max(6px, env(safe-area-inset-top));
+  }
+  .compass .needle::before {
+    top: -24px;
+    border-bottom-width: 18px;
+  }
+  .compass .needle2::before {
+    top: -30px;
+    width: 8px;
+    height: 8px;
+  }
+  .compass span {
+    font-size: 11px;
+  }
+  .region {
+    top: calc(max(6px, env(safe-area-inset-top)) + 76px);
+    font-size: 10px;
+    width: 180px;
   }
 }
 
