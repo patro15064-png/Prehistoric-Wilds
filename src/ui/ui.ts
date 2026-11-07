@@ -94,6 +94,8 @@ export class Ui {
   mapOpen = false
   private mapReturn: 'hud' | 'pause' | null = null
   private mapDrawT = 0
+  private mapZoom = 1.0
+  private mapPan = { x: 0, y: 0 }
   helpOpen = false
   private lastPrompt = ''
   private lastObjective = ''
@@ -135,6 +137,7 @@ export class Ui {
     this.root.addEventListener('click', e => this.onClick(e))
     this.root.addEventListener('input', e => this.onInput(e))
     window.addEventListener('keydown', e => this.onKey(e))
+    this.initMapGestures()
     this.refreshSettings()
   }
 
@@ -297,8 +300,18 @@ export class Ui {
 <div class="overlay map" data-el="map" hidden>
   <div class="panel map-panel">
     <header><div><small class="eyebrow">FIELD CHART · NORTH IS UP</small><h3>Cinderfall Isle</h3></div><button class="x" data-act="map" aria-label="Close map">✕</button></header>
-    <div class="map-wrap"><canvas data-el="mapCanvas" width="640" height="640"></canvas><div class="map-compass" aria-hidden="true">N<span>✦</span></div></div>
-    <div class="map-meta"><span data-el="mapMeta">Uncharted waters</span><span>ESC close · M map</span></div>
+    <div class="map-wrap" data-el="mapWrap">
+      <div class="map-viewport" data-el="mapViewport">
+        <canvas data-el="mapCanvas" width="640" height="640"></canvas>
+      </div>
+      <div class="map-compass" aria-hidden="true">N<span>✦</span></div>
+      <div class="map-zoom-bar">
+        <button class="map-zoom-btn" data-act="map-zoom-in" aria-label="Zoom in" title="Zoom in">+</button>
+        <button class="map-zoom-btn" data-act="map-zoom-out" aria-label="Zoom out" title="Zoom out">−</button>
+        <button class="map-zoom-btn" data-act="map-zoom-reset" aria-label="Reset zoom" title="Reset zoom">⟲</button>
+      </div>
+    </div>
+    <div class="map-meta"><span data-el="mapMeta">Uncharted waters</span><span>Pinch or buttons to zoom</span></div>
     <p class="legend"><i class="lg you"></i>Player <i class="lg camp"></i>Camp <i class="lg obj"></i>Objective <i class="lg boss"></i>Apex <i class="lg poi"></i>Landmark <i class="lg trk"></i>Tracked</p>
   </div>
 </div>
@@ -373,6 +386,7 @@ export class Ui {
     if (from === 'hud' && this.game.mode === 'playing') this.game.pause()
     this.mapReturn = from
     this.mapOpen = true
+    this.resetMapZoom()
     this.el.map.hidden = false
     this.game.audio.play('uiOpen')
     this.actions.consumeKeys()
@@ -382,6 +396,7 @@ export class Ui {
     if (!this.mapOpen) return
     const from = this.mapReturn
     this.mapOpen = false
+    this.resetMapZoom()
     this.el.map.hidden = true
     this.mapReturn = null
     if (from === 'hud') {
@@ -495,6 +510,15 @@ export class Ui {
         break
       case 'map':
         this.closeMap()
+        break
+      case 'map-zoom-in':
+        this.setMapZoom(this.mapZoom + 0.5)
+        break
+      case 'map-zoom-out':
+        this.setMapZoom(this.mapZoom - 0.5)
+        break
+      case 'map-zoom-reset':
+        this.resetMapZoom(true)
         break
       case 'pause-map':
         this.openMap('pause')
@@ -1467,6 +1491,147 @@ export class Ui {
       E.mealT.textContent = `${Math.floor(m.t / 60)}:${String(Math.floor(m.t % 60)).padStart(2, '0')}`
       E.mealChip.classList.toggle('ending', m.t < 30)
     }
+  }
+
+  // ─── Map Zoom & Pan Gestures (Pinch-to-zoom & Drag-to-pan for mobile) ───────────
+
+  private setMapZoom(target: number): void {
+    const prev = this.mapZoom
+    this.mapZoom = Math.max(1.0, Math.min(3.5, target))
+    if (this.mapZoom <= 1.0) {
+      this.mapPan = { x: 0, y: 0 }
+    } else if (prev <= 1.0 && this.game) {
+      const P = this.game.player
+      const half = WORLD.half
+      const nx = P.pos.x / (2 * half)
+      const nz = P.pos.z / (2 * half)
+      const vp = this.el.mapViewport
+      const w = vp?.clientWidth || 320
+      const h = vp?.clientHeight || 320
+      this.mapPan.x = -nx * w * (this.mapZoom - 1)
+      this.mapPan.y = -nz * h * (this.mapZoom - 1)
+    }
+    this.applyMapTransform(true)
+    this.game?.audio.play('ui')
+  }
+
+  private resetMapZoom(animate = false): void {
+    this.mapZoom = 1.0
+    this.mapPan = { x: 0, y: 0 }
+    this.applyMapTransform(animate)
+  }
+
+  private applyMapTransform(animate = false): void {
+    const canvas = this.el.mapCanvas as HTMLCanvasElement | undefined
+    if (!canvas) return
+    const vp = this.el.mapViewport as HTMLElement | undefined
+    if (!vp) return
+
+    const w = vp.clientWidth || 320
+    const h = vp.clientHeight || 320
+    const maxPanX = Math.max(0, (w * (this.mapZoom - 1)) / 2)
+    const maxPanY = Math.max(0, (h * (this.mapZoom - 1)) / 2)
+    this.mapPan.x = Math.max(-maxPanX, Math.min(maxPanX, this.mapPan.x))
+    this.mapPan.y = Math.max(-maxPanY, Math.min(maxPanY, this.mapPan.y))
+
+    canvas.style.transition = animate ? 'transform 0.18s cubic-bezier(0.2, 0.8, 0.3, 1)' : 'none'
+    canvas.style.transformOrigin = 'center center'
+    canvas.style.transform = `translate(${this.mapPan.x.toFixed(1)}px, ${this.mapPan.y.toFixed(1)}px) scale(${this.mapZoom.toFixed(3)})`
+  }
+
+  private initMapGestures(): void {
+    const vp = this.el.mapViewport
+    if (!vp) return
+
+    const activePointers = new Map<number, { x: number; y: number }>()
+    let startDist = 0
+    let startZoom = 1.0
+    let lastPanPos = { x: 0, y: 0 }
+    let lastTapTime = 0
+
+    vp.addEventListener('pointerdown', e => {
+      activePointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
+      try { vp.setPointerCapture(e.pointerId) } catch {}
+
+      if (activePointers.size === 2) {
+        const pts = Array.from(activePointers.values())
+        startDist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y)
+        startZoom = this.mapZoom
+      } else if (activePointers.size === 1) {
+        lastPanPos = { x: e.clientX, y: e.clientY }
+        const now = performance.now()
+        if (now - lastTapTime < 320) {
+          if (this.mapZoom > 1.2) {
+            this.resetMapZoom(true)
+          } else {
+            this.mapZoom = 2.2
+            const r = vp.getBoundingClientRect()
+            const cx = r.left + r.width / 2
+            const cy = r.top + r.height / 2
+            this.mapPan.x = (cx - e.clientX) * 1.2
+            this.mapPan.y = (cy - e.clientY) * 1.2
+            this.applyMapTransform(true)
+          }
+          this.game?.audio.play('ui')
+          lastTapTime = 0
+          return
+        }
+        lastTapTime = now
+      }
+      e.preventDefault()
+    })
+
+    vp.addEventListener('pointermove', e => {
+      if (!activePointers.has(e.pointerId)) return
+      activePointers.set(e.pointerId, { x: e.clientX, y: e.clientY })
+
+      if (activePointers.size >= 2) {
+        const pts = Array.from(activePointers.values())
+        const dist = Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y)
+        if (startDist > 0) {
+          const factor = dist / startDist
+          this.mapZoom = Math.max(1.0, Math.min(3.5, startZoom * factor))
+          if (this.mapZoom <= 1.0) {
+            this.mapPan = { x: 0, y: 0 }
+          }
+          this.applyMapTransform(false)
+        }
+        e.preventDefault()
+      } else if (activePointers.size === 1 && this.mapZoom > 1.02) {
+        const dx = e.clientX - lastPanPos.x
+        const dy = e.clientY - lastPanPos.y
+        lastPanPos = { x: e.clientX, y: e.clientY }
+        this.mapPan.x += dx
+        this.mapPan.y += dy
+        this.applyMapTransform(false)
+        e.preventDefault()
+      }
+    })
+
+    const endPointer = (e: PointerEvent) => {
+      activePointers.delete(e.pointerId)
+      if (activePointers.size < 2) {
+        startDist = 0
+        if (this.mapZoom <= 1.02) {
+          this.mapZoom = 1.0
+          this.mapPan = { x: 0, y: 0 }
+        }
+        this.applyMapTransform(true)
+      }
+      if (activePointers.size === 1) {
+        const rem = Array.from(activePointers.values())[0]
+        if (rem) lastPanPos = { x: rem.x, y: rem.y }
+      }
+    }
+
+    vp.addEventListener('pointerup', endPointer)
+    vp.addEventListener('pointercancel', endPointer)
+
+    vp.addEventListener('wheel', e => {
+      e.preventDefault()
+      const delta = e.deltaY < 0 ? 0.35 : -0.35
+      this.setMapZoom(this.mapZoom + delta)
+    }, { passive: false })
   }
 
   private drawMap(g: Game): void {
