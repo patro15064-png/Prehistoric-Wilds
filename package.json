@@ -10,6 +10,7 @@
     "sync:check": "node scripts/sync-readme.mjs --check",
     "build": "node scripts/sync-readme.mjs && tsc --noEmit && vite build && node scripts/check-size.mjs",
     "build:pages": "node scripts/sync-readme.mjs && tsc --noEmit && vite build",
+    "deploy": "wrangler pages deploy dist",
     "build:share": "node scripts/manus-game-assets/restore.mjs && node scripts/manus-game-sharing/build.mjs",
     "preview": "vite preview --port 4173 --strictPort",
     "typecheck": "tsc --noEmit",

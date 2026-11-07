@@ -64,11 +64,10 @@ Comprehensive verification checklist for the standalone release and Cloudflare P
 ## 3. Cloudflare Pages Deployment Checklist
 
 - [x] **Configuration Files**
-  - [x] `wrangler.toml`: Set `name = "prehistoric-wilds"`, `pages_build_output_dir = "dist"`, and `NODE_VERSION = "20"`
+  - [x] `wrangler.toml`: Set `name = "prehistoric-wilds"` and `pages_build_output_dir = "dist"` for Cloudflare Pages
   - [x] `.nvmrc`: Enforces Node 20 LTS in Cloudflare Pages build environments
   - [x] `public/_headers`: Security headers and 1-year immutable caching for static assets (`.glb`, `.wasm`, `.webp`, `.woff2`, audio)
   - [x] `public/_redirects`: Clean redirect handling for sub-routes such as `/enemies`
-  - [x] `public/_routes.json`: Static routing configuration
   - [x] Multi-page app output support: Generates both `dist/index.html` (main game) and `dist/enemies/index.html` (enemy lab)
 
 ---

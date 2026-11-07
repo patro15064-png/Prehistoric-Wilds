@@ -87,7 +87,6 @@
 ├── public/                 # Static assets copied directly to dist
 │   ├── _headers            # Cloudflare Pages security & caching headers
 │   ├── _redirects          # Cloudflare Pages redirect rules
-│   ├── _routes.json        # Cloudflare Pages static routing definition
 │   ├── audio/              # Ambient loops, music stems, and combat SFX
 │   ├── fonts/              # Subsetted variable web fonts (Sora, Figtree)
 │   ├── models/             # Optimized glTF binary models (hunter, creatures, env)
