@@ -713,7 +713,8 @@ export class Game {
     this.progress.hunger = Math.max(0, this.progress.hunger - rate * dt)
     if (this.progress.hunger <= 24) this.tip('hunger', 'Your <b>hunger</b> is low. Hunt ordinary wildlife, carve the carcass, and cook a meal at the camp hearth.')
     if (this.progress.hunger <= 0) {
-      P.hurt(4.5 * dt)
+      // FIX: Decreased starving health loss speed by 75% (from 4.5 to 1.125 HP/s)
+      P.hurt(1.125 * dt)
       if (!this.progress.tips.includes('starving')) this.tip('starving', 'You are <b>starving</b>. Find food quickly or your health will keep falling.')
     }
   }
