@@ -5,9 +5,11 @@ import { ARENAS, MAP_GRID, PATHS, POI, REGION_NAMES, WORLD } from '../game/terra
 import { CAMP } from '../game/camp'
 import type { Game, Hooks, MenuTab, PopupKind, StampKind } from '../game/game'
 import type { SaveData, SaveStore } from '../engine/save'
+import type { Input } from '../engine/input'
 import { gearIcon, icon } from './icons'
 import { UiFx } from './uifx'
 import { CodexManager, type CodexTab } from '../game/codex' // CODEX HOOK
+import { TouchControls } from './touch' // FIX: Full mobile touch controls support
 
 /** Painted item icons (public/ui/icons/<id>.webp); SVG fallback for anything else. */
 const PAINTED = new Set<string>(['amber', 'ashfangPelt', 'bone', 'emberCarapace', 'fiber', 'flint', 'herb', 'hogTusk', 'hornShard', 'magmaHeart', 'obsidian', 'poultice', 'roughHide', 'ruinCrest', 'ruinPlate', 'scorchScale', 'snapperScale', 'stalkerClaw', 'stalkerHide', 'stone', 'sulfur', 'wood', 'meat', 'glowcap', 'snare', 'pitfall', 'flashPod'])
@@ -30,6 +32,7 @@ export type UiActions = {
   settings(patch: Partial<SaveData>): void
   lockPointer(): void
   consumeKeys(): void
+  pause?(): void
 }
 
 const esc = (s: string) => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!)
@@ -88,14 +91,15 @@ export class Ui {
   private tipT = 0
   private toastT = 0
   private hurtT = 0
-  private mapOpen = false
+  mapOpen = false
   private mapReturn: 'hud' | 'pause' | null = null
   private mapDrawT = 0
-  private helpOpen = false
+  helpOpen = false
   private lastPrompt = ''
   private lastObjective = ''
   private objectiveFlash = 0
   readonly fx: UiFx
+  readonly touch: TouchControls
   private lastLootId: ItemId | null = null
   private lastPot = -1
   private lastHp = -1
@@ -114,11 +118,19 @@ export class Ui {
   private journalSel: SpeciesId = 'tuskhog'
   readonly codex = new CodexManager() // CODEX HOOK
 
-  constructor(private readonly save: SaveStore, private readonly actions: UiActions) {
+  constructor(private readonly save: SaveStore, private readonly actions: UiActions, readonly input?: Input) {
     this.root = document.querySelector('#ui')!
     this.root.innerHTML = this.template()
     for (const n of this.root.querySelectorAll<HTMLElement>('[data-el]')) this.el[n.dataset.el!] = n
     this.fx = new UiFx(document.body)
+    this.touch = new TouchControls(this.input ?? ({} as Input), this.save, this, {
+      openSatchel: () => this.openSatchel(),
+      openJournal: () => this.openJournal(),
+      openMap: () => this.openMap('hud'),
+      openSkills: () => this.toggleSkills(),
+      pause: () => this.actions.pause?.() ?? (this.game?.mode === 'playing' ? (this.game.pause(), this.show('pause')) : undefined),
+      resume: () => this.actions.resume(),
+    })
     this.root.addEventListener('click', e => this.onClick(e))
     this.root.addEventListener('input', e => this.onInput(e))
     window.addEventListener('keydown', e => this.onKey(e))
@@ -299,6 +311,13 @@ export class Ui {
     <label class="check"><input type="checkbox" data-set="invertY"> Invert camera Y</label>
     <label class="check"><input type="checkbox" data-set="reducedMotion"> Reduce screen shake</label>
     <label class="check"><input type="checkbox" data-set="muted"> Mute all audio</label>
+    <label>Touch controls
+      <select data-set="touchControls">
+        <option value="auto">Auto-detect</option>
+        <option value="on">Always On</option>
+        <option value="off">Off (Desktop only)</option>
+      </select>
+    </label>
     <label>Graphics
       <select data-set="quality"><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option></select>
     </label>
@@ -348,7 +367,7 @@ export class Ui {
     if (!on) this.mapReturn = null
   }
 
-  private openMap(from: 'hud' | 'pause'): void {
+  openMap(from: 'hud' | 'pause' = 'hud'): void {
     if (!this.game) return
     if (from === 'hud' && this.game.mode === 'playing') this.game.pause()
     this.mapReturn = from
@@ -358,7 +377,7 @@ export class Ui {
     this.actions.consumeKeys()
   }
 
-  private closeMap(): void {
+  closeMap(): void {
     if (!this.mapOpen) return
     const from = this.mapReturn
     this.mapOpen = false
@@ -367,7 +386,7 @@ export class Ui {
     if (from === 'hud') {
       this.game?.resume()
       this.show('hud')
-      this.actions.lockPointer()
+      if (!this.touch.isTouchActive) this.actions.lockPointer()
     } else if (from === 'pause') {
       this.show('pause')
     }
@@ -375,7 +394,15 @@ export class Ui {
     this.actions.consumeKeys()
   }
 
-  private toggleSkills(on = this.screen !== 'skills'): void {
+  openJournal(): void {
+    this.openMenu('journal')
+  }
+
+  openSatchel(): void {
+    this.openMenu(this.game?.atCamp ? 'craft' : 'materials')
+  }
+
+  toggleSkills(on = this.screen !== 'skills'): void {
     if (!this.game) return
     if (on && this.screen === 'hud' && this.game.mode === 'playing') {
       this.game.pause()
@@ -386,7 +413,7 @@ export class Ui {
     } else if (!on && this.screen === 'skills') {
       this.game.resume()
       this.show('hud')
-      this.actions.lockPointer()
+      if (!this.touch.isTouchActive) this.actions.lockPointer()
       this.game.audio.play('ui')
       this.actions.consumeKeys()
     }
@@ -396,17 +423,50 @@ export class Ui {
 
   private onClick(e: MouseEvent): void {
     const t = e.target as HTMLElement
+    const g = this.game
+    g?.audio.unlock()
+
     const tabBtn = t.closest<HTMLElement>('header.tabs > [data-tab]')
     if (tabBtn) {
       this.game?.audio.play('ui')
       this.renderMenu(tabBtn.dataset.tab as MenuTab)
       return
     }
+
+    // Direct HUD touch interactions (Hotbar selection, Poultice, Gadget, Prompt)
+    const hslot = t.closest<HTMLElement>('.hslot[data-slot]')
+    if (hslot && g && g.mode === 'playing') {
+      const slot = hslot.dataset.slot as any
+      g.setHeld(slot)
+      g.audio.play('ui')
+      return
+    }
+
+    const potChip = t.closest<HTMLElement>('[data-el="potChip"]')
+    if (potChip && g && g.mode === 'playing') {
+      this.input?.touchPress('heal')
+      return
+    }
+
+    const gadgetChip = t.closest<HTMLElement>('[data-el="gadget"]')
+    if (gadgetChip && g && g.mode === 'playing') {
+      if (t.closest('em') || t.matches('em')) {
+        this.input?.touchPress('gadgetCycle')
+      } else {
+        this.input?.touchPress('gadget')
+      }
+      return
+    }
+
+    const promptEl = t.closest<HTMLElement>('[data-el="prompt"]')
+    if (promptEl && g && g.mode === 'playing') {
+      this.input?.touchPress('interact')
+      return
+    }
+
     const b = t.closest<HTMLElement>('[data-act]')
     if (!b) return
     const act = b.dataset.act!
-    const g = this.game
-    g?.audio.unlock()
     switch (act) {
       case 'continue':
         this.actions.continueGame()
@@ -1133,6 +1193,7 @@ export class Ui {
   frame(dt: number): void {
     const g = this.game
     if (!g) return
+    this.touch.update(g) // FIX: sync mobile touch controls & HUD state
     if (this.bannerT > 0) {
       this.bannerT -= dt
       if (this.bannerT <= 0) this.el.banner.classList.remove('on')
@@ -1354,7 +1415,7 @@ export class Ui {
     }
     if (!it || g.mode !== 'playing' || P.busy) E.prompt.classList.remove('on')
     else if (it) E.prompt.classList.add('on')
-    E.clickLook.classList.toggle('on', g.mode === 'playing' && !document.pointerLockElement && this.screen === 'hud' && !this.mapOpen && !this.helpOpen)
+    E.clickLook.classList.toggle('on', g.mode === 'playing' && !document.pointerLockElement && this.screen === 'hud' && !this.mapOpen && !this.helpOpen && !this.touch.isTouchActive)
     E.region.textContent = REGION_NAMES[g.region]
   }
 

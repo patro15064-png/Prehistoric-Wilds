@@ -38,45 +38,50 @@ async function boot(): Promise<void> {
     audio.startMusic()
     game.start(fresh)
     ui.show('hud')
-    input.lockPointer()
+    if (!ui.touch?.isTouchActive) input.lockPointer()
   }
   const pause = () => {
     if (game?.mode !== 'playing') return
     game.pause()
     ui.show('pause')
+    ui.touch?.reset()
     input.unlockPointer()
   }
   const resume = () => {
     if (game?.mode !== 'paused') return
     game.resume()
     ui.show('hud')
-    input.lockPointer()
+    if (!ui.touch?.isTouchActive) input.lockPointer()
   }
   const ui = new Ui(save, {
     newGame: () => startRun(true),
     continueGame: () => startRun(false),
     resume,
+    pause,
     quitToTitle: () => {
       game?.toTitle()
       audio.onTitle = true
       ui.show('title')
+      ui.touch?.reset()
       input.unlockPointer()
     },
     keepExploring: () => {
       game?.keepExploring()
       ui.show('hud')
-      input.lockPointer()
+      if (!ui.touch?.isTouchActive) input.lockPointer()
     },
     settings: patch => {
       if (patch.quality) manualQuality = true
       save.update(patch)
       applySettings(save.data)
     },
-    lockPointer: () => input.lockPointer(),
+    lockPointer: () => {
+      if (!ui.touch?.isTouchActive) input.lockPointer()
+    },
     consumeKeys: () => {
       for (const a of ['satchel', 'pause', 'map', 'help', 'skills'] as const) input.consume(a)
     },
-  })
+  }, input)
   ui.show('boot')
   applySettings(save.data)
 
@@ -181,16 +186,20 @@ async function boot(): Promise<void> {
   document.addEventListener('pointerlockchange', () => {
     input.gameplayMouse = !!document.pointerLockElement
     // Browsers release pointer lock on Escape without delivering the key: treat that as pause.
-    if (!document.pointerLockElement && g.mode === 'playing' && ui.screen === 'hud' && input.method === 'keyboard') {
+    if (!document.pointerLockElement && g.mode === 'playing' && ui.screen === 'hud' && input.method === 'keyboard' && !ui.touch?.isTouchActive) {
       lockLostAt = performance.now()
       pause()
     }
   })
   document.addEventListener('visibilitychange', () => {
-    if (document.hidden) pause()
+    if (document.hidden) {
+      pause()
+      ui.touch?.reset()
+      input.resetTouch()
+    }
   })
   canvas.addEventListener('click', () => {
-    if (g.mode === 'playing' && ui.screen === 'hud') input.lockPointer()
+    if (g.mode === 'playing' && ui.screen === 'hud' && !ui.touch?.isTouchActive) input.lockPointer()
   })
   window.addEventListener('beforeunload', () => {
     if (g.mode !== 'title' && g.mode !== 'loading') g.save()
@@ -204,6 +213,8 @@ async function boot(): Promise<void> {
   const firstGesture = () => { audio.unlock(); audio.onTitle = g.mode === 'title'; audio.startMusic() }
   window.addEventListener('pointerdown', firstGesture, { once: true })
   window.addEventListener('keydown', firstGesture, { once: true })
+  window.addEventListener('touchstart', firstGesture, { once: true, passive: true })
+  window.addEventListener('touchend', firstGesture, { once: true, passive: true })
   // Debug/test hook (read-only use): smoke tests inspect state through it.
   ;(window as unknown as { __game: unknown }).__game = { game: g, ui, input, save }
 }

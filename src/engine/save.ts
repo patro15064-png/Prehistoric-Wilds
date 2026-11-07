@@ -4,6 +4,7 @@
  */
 export type Locale = 'en' | 'zh-CN'
 export type Quality = 'low' | 'medium' | 'high'
+export type TouchMode = 'auto' | 'on' | 'off'
 
 export type ScoreEntry = { name: string; score: number; seconds: number; at: number }
 
@@ -17,6 +18,7 @@ export type SaveData = {
   sensitivity: number
   invertY: boolean
   quality: Quality
+  touchControls: TouchMode
   reducedMotion: boolean
   tutorialDone: boolean
   playerName: string
@@ -36,6 +38,7 @@ export function defaultSave(): SaveData {
     sensitivity: 1,
     invertY: false,
     quality: 'high',
+    touchControls: 'auto',
     reducedMotion: false,
     tutorialDone: false,
     playerName: 'PLAYER',
@@ -68,6 +71,7 @@ export function parseSave(raw: string | null): SaveData {
     sensitivity: typeof data.sensitivity === 'number' && data.sensitivity >= 0.2 && data.sensitivity <= 3 ? data.sensitivity : base.sensitivity,
     invertY: data.invertY === true,
     quality: data.quality === 'low' || data.quality === 'medium' || data.quality === 'high' ? data.quality : base.quality,
+    touchControls: data.touchControls === 'auto' || data.touchControls === 'on' || data.touchControls === 'off' ? data.touchControls : base.touchControls,
     reducedMotion: data.reducedMotion === true,
     tutorialDone: data.tutorialDone === true,
     playerName: typeof data.playerName === 'string' && data.playerName.trim() ? data.playerName.trim().slice(0, 16) : base.playerName,

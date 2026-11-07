@@ -9,7 +9,7 @@ export type Action =
   | 'satchel' | 'map' | 'help' | 'pause' | 'confirm'
   | 'slot1' | 'slot2' | 'slot3' | 'slot4' | 'cycle'
   | 'gadget' | 'gadgetCycle' | 'journal' | 'skills'
-export type InputMethod = 'keyboard' | 'gamepad'
+export type InputMethod = 'keyboard' | 'gamepad' | 'touch'
 
 const KEY_BINDINGS: Record<Action, string[]> = {
   light: ['KeyJ'],
@@ -57,6 +57,12 @@ export class Input {
   private padPrev = new Set<Action>()
   private listeners: Array<() => void> = []
 
+  // FIX: Full mobile touch support — tracking virtual joystick and on-screen touch actions
+  readonly touchMove = { x: 0, y: 0 }
+  readonly touchLook = { x: 0, y: 0 }
+  private touchHeld = new Set<Action>()
+  private touchPressed = new Set<Action>()
+
   constructor(private readonly canvas: HTMLCanvasElement) {
     const on = <K extends keyof WindowEventMap>(target: Window | HTMLElement, type: K, fn: (e: WindowEventMap[K]) => void, opts?: AddEventListenerOptions) => {
       target.addEventListener(type, fn as EventListener, opts)
@@ -77,6 +83,7 @@ export class Input {
     on(window, 'blur', () => {
       this.keys.clear()
       this.mouse.clear()
+      this.resetTouch() // FIX: clean reset when window or app loses focus
     })
     on(window, 'mousedown', e => {
       if (document.pointerLockElement !== canvas || !this.gameplayMouse) return
@@ -151,9 +158,68 @@ export class Input {
       }
       this.padPrev = now
     }
+
+    // FIX: Incorporate virtual joystick and touch inputs
+    if (this.touchMove.x !== 0 || this.touchMove.y !== 0) {
+      x = this.touchMove.x
+      y = this.touchMove.y
+      this.method = 'touch'
+    }
+    for (const a of this.touchHeld) {
+      this.held_.add(a)
+      this.method = 'touch'
+    }
+    for (const a of this.touchPressed) {
+      this.pressed_.add(a)
+      this.method = 'touch'
+    }
+    this.touchPressed.clear()
+
+    this.look.x += this.touchLook.x
+    this.look.y += this.touchLook.y
+    this.touchLook.x = 0
+    this.touchLook.y = 0
+
     const len = Math.hypot(x, y)
     this.move.x = len > 1 ? x / len : x
     this.move.y = len > 1 ? y / len : y
+  }
+
+  // FIX: Touch controller API for virtual joystick, touch look, and action buttons
+  setTouchMove(x: number, y: number): void {
+    this.touchMove.x = x
+    this.touchMove.y = y
+    if (x !== 0 || y !== 0) this.method = 'touch'
+  }
+
+  addTouchLook(dx: number, dy: number): void {
+    this.touchLook.x += dx
+    this.touchLook.y += dy
+    this.method = 'touch'
+  }
+
+  setTouchHeld(action: Action, held: boolean): void {
+    if (held) {
+      this.touchHeld.add(action)
+      this.touchPressed.add(action)
+      this.method = 'touch'
+    } else {
+      this.touchHeld.delete(action)
+    }
+  }
+
+  touchPress(action: Action): void {
+    this.touchPressed.add(action)
+    this.method = 'touch'
+  }
+
+  resetTouch(): void {
+    this.touchMove.x = 0
+    this.touchMove.y = 0
+    this.touchLook.x = 0
+    this.touchLook.y = 0
+    this.touchHeld.clear()
+    this.touchPressed.clear()
   }
 
   held(action: Action): boolean {

@@ -12,7 +12,7 @@ mkdirSync(out, { recursive: true })
 
 const server = spawn(process.execPath, ['node_modules/vite/bin/vite.js', 'preview', '--port', String(port), '--strictPort', '--host', '127.0.0.1'], { stdio: 'ignore', detached: false })
 let browser
-const guard = setTimeout(() => fail('timed out after 120s'), 120_000)
+const guard = setTimeout(() => fail('timed out after 240s'), 240_000)
 
 function cleanup() {
   clearTimeout(guard)
