@@ -81,20 +81,19 @@ export class TouchControls {
     check()
 
     // Detect first real touch event
-    const onTouch = () => {
+    // FIX: Single listener function avoids temporal dead zone and block-scoped variable hoisting issues
+    const onTouch = (e?: Event) => {
+      if (typeof PointerEvent !== 'undefined' && e instanceof PointerEvent && e.pointerType !== 'touch') {
+        return
+      }
       this.touchDetected = true
       this.root.classList.add('touch-capable')
       this.input.method = 'touch'
       window.removeEventListener('touchstart', onTouch)
-      window.removeEventListener('pointerdown', onPointerTouch)
-    }
-    const onPointerTouch = (e: PointerEvent) => {
-      if (e.pointerType === 'touch') {
-        onTouch()
-      }
+      window.removeEventListener('pointerdown', onTouch)
     }
     window.addEventListener('touchstart', onTouch, { passive: true })
-    window.addEventListener('pointerdown', onPointerTouch, { passive: true })
+    window.addEventListener('pointerdown', onTouch, { passive: true })
   }
 
   private template(): string {

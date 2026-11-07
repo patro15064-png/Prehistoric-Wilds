@@ -1,11 +1,11 @@
 import * as THREE from 'three'
-import { CAMP_STAGES, GEAR, ITEMS, MEALS, MEAL_ORDER, RECIPES, SEAR_ZONES, SPECIES, TOWER_COST, TRACKING, WEAPON_CLASSES, type Cost, type GearId, type ItemId, type MealId, type RecipeDef, type SearQuality, type SpeciesId } from '../game/data'
+import { CAMP_STAGES, GEAR, ITEMS, MEALS, MEAL_ORDER, RECIPES, SEAR_ZONES, SPECIES, TOWER_COST, TRACKING, WEAPON_CLASSES, type Cost, type GearId, type HeldId, type ItemId, type MealId, type RecipeDef, type SearQuality, type SpeciesId } from '../game/data'
 import { cookState, count, gearStats, knowledge, missing, nextCampStage, recipeState, towerState, weaponClass } from '../game/rules'
 import { ARENAS, MAP_GRID, PATHS, POI, REGION_NAMES, WORLD } from '../game/terrain'
 import { CAMP } from '../game/camp'
 import type { Game, Hooks, MenuTab, PopupKind, StampKind } from '../game/game'
 import type { SaveData, SaveStore } from '../engine/save'
-import type { Input } from '../engine/input'
+import { Input } from '../engine/input'
 import { gearIcon, icon } from './icons'
 import { UiFx } from './uifx'
 import { CodexManager, type CodexTab } from '../game/codex' // CODEX HOOK
@@ -123,7 +123,8 @@ export class Ui {
     this.root.innerHTML = this.template()
     for (const n of this.root.querySelectorAll<HTMLElement>('[data-el]')) this.el[n.dataset.el!] = n
     this.fx = new UiFx(document.body)
-    this.touch = new TouchControls(this.input ?? ({} as Input), this.save, this, {
+    // FIX: Fallback to a concrete Input instance if none is provided to avoid null/undefined method crashes
+    this.touch = new TouchControls(this.input ?? new Input(document.createElement('canvas')), this.save, this, {
       openSatchel: () => this.openSatchel(),
       openJournal: () => this.openJournal(),
       openMap: () => this.openMap('hud'),
@@ -434,9 +435,10 @@ export class Ui {
     }
 
     // Direct HUD touch interactions (Hotbar selection, Poultice, Gadget, Prompt)
+    // FIX: Typed slot selection and universal press injection for both mouse clicks and touch taps
     const hslot = t.closest<HTMLElement>('.hslot[data-slot]')
     if (hslot && g && g.mode === 'playing') {
-      const slot = hslot.dataset.slot as any
+      const slot = hslot.dataset.slot as HeldId
       g.setHeld(slot)
       g.audio.play('ui')
       return
@@ -444,23 +446,23 @@ export class Ui {
 
     const potChip = t.closest<HTMLElement>('[data-el="potChip"]')
     if (potChip && g && g.mode === 'playing') {
-      this.input?.touchPress('heal')
+      this.input?.press('heal')
       return
     }
 
     const gadgetChip = t.closest<HTMLElement>('[data-el="gadget"]')
     if (gadgetChip && g && g.mode === 'playing') {
       if (t.closest('em') || t.matches('em')) {
-        this.input?.touchPress('gadgetCycle')
+        this.input?.press('gadgetCycle')
       } else {
-        this.input?.touchPress('gadget')
+        this.input?.press('gadget')
       }
       return
     }
 
     const promptEl = t.closest<HTMLElement>('[data-el="prompt"]')
     if (promptEl && g && g.mode === 'playing') {
-      this.input?.touchPress('interact')
+      this.input?.press('interact')
       return
     }
 
